@@ -1,10 +1,18 @@
+import 'package:evently/core/providers/change_lang.dart';
 import 'package:evently/core/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(ChangeNotifierProvider(
+    create: (context) => ChangeLang(),
+      child: MyApp()
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -13,7 +21,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    var langProvider = Provider.of<ChangeLang>(context);
     return MaterialApp(
+      theme: langProvider.theme.copyWith(
+        textTheme: langProvider.isEnglish? GoogleFonts.interTightTextTheme() : GoogleFonts.ibmPlexSansArabicTextTheme(),
+      ),
       onGenerateTitle: (context) => AppLocalizations.of(context)!.hello,
       debugShowCheckedModeBanner: false,
       localizationsDelegates: [
@@ -26,8 +38,9 @@ class MyApp extends StatelessWidget {
         Locale('en'), // English
         Locale('ar'), // Spanish
       ],
-      locale: Locale('en'),
+      locale: langProvider.locale,
       routes: Routes.myAppRoutes,
+      // home: OnboardingScreen(),
     );
   }
 }
