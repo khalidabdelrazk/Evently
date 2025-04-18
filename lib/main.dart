@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
     var langProvider = Provider.of<ChangeLang>(context);
     return MaterialApp(
       theme: langProvider.theme.copyWith(
-        textTheme: langProvider.isEnglish? GoogleFonts.interTightTextTheme() : GoogleFonts.ibmPlexSansArabicTextTheme(),
+        textTheme: langProvider.isEnglish? GoogleFonts.interTextTheme() : GoogleFonts.ibmPlexSansArabicTextTheme(),
       ),
       onGenerateTitle: (context) => AppLocalizations.of(context)!.hello,
       debugShowCheckedModeBanner: false,

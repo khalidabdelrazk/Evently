@@ -1,10 +1,14 @@
 import 'package:evently/core/colors/app_colors.dart';
+import 'package:evently/core/providers/change_lang.dart';
+import 'package:evently/core/routes/route_names.dart';
 import 'package:evently/screens/home%20screen/pages/favourite_page.dart';
 import 'package:evently/screens/home%20screen/pages/home_page.dart';
 import 'package:evently/screens/home%20screen/pages/map_page.dart';
-import 'package:evently/screens/home%20screen/pages/new_event_page.dart';
+import 'package:evently/screens/new%20event/new_event.dart';
 import 'package:evently/screens/home%20screen/pages/profile_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,42 +24,54 @@ class _HomeScreenState extends State<HomeScreen> {
     MapPage(),
     FavouritePage(),
     ProfilePage(),
-    NewEventPage()
   ];
 
   @override
   Widget build(BuildContext context) {
+    var langProvider = Provider.of<ChangeLang>(context);
     return Scaffold(
       body: pages[currentIndex],
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          setState(() {
-            currentIndex = 4;
-          });
+          Navigator.pushNamed(context, RouteNames.newEvent);
         },
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(360),
-          side: BorderSide(color: AppColors.white, width: 6),
+          side: BorderSide(color: AppColors.white, width: 4),
         ),
-        backgroundColor: AppColors.primaryColor,
+        backgroundColor:
+            langProvider.isDark ? AppColors.darkBlue : AppColors.primaryColor,
         child: Icon(Icons.add, color: AppColors.white, size: 34),
       ),
       bottomNavigationBar: BottomAppBar(
         elevation: 0,
         notchMargin: 0,
         shape: CircularNotchedRectangle(),
-        color: AppColors.primaryColor,
+        color:
+            langProvider.isDark ? AppColors.darkBlue : AppColors.primaryColor,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              buildNavItem(Icons.home, 'Home', 0),
-              buildNavItem(Icons.location_on, 'Map', 1),
+              buildNavItem(Icons.home, AppLocalizations.of(context)!.home, 0),
+              buildNavItem(
+                Icons.location_on,
+                AppLocalizations.of(context)!.map,
+                1,
+              ),
               const SizedBox(width: 48),
-              buildNavItem(Icons.favorite, 'Love', 2),
-              buildNavItem(Icons.person, 'Profile', 3),
+              buildNavItem(
+                Icons.favorite,
+                AppLocalizations.of(context)!.love,
+                2,
+              ),
+              buildNavItem(
+                Icons.person,
+                AppLocalizations.of(context)!.profile,
+                3,
+              ),
             ],
           ),
         ),
@@ -80,13 +96,12 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(icon, color: isSelected ? AppColors.white : Colors.white70),
-            isSelected? Text(
-              label,
-              style: TextStyle(
-                color: AppColors.white,
-                fontSize: 12,
-              ),
-            ): SizedBox(),
+            isSelected
+                ? Text(
+                  label,
+                  style: TextStyle(color: AppColors.white, fontSize: 12),
+                )
+                : SizedBox(),
           ],
         ),
       ),

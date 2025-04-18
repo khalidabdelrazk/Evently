@@ -17,6 +17,7 @@ class ChangeLang with ChangeNotifier {
     _loadPreferences(); // Load preferences when the class is instantiated
   }
 
+
   // Load preferences from SharedPreferences
   Future<void> _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
@@ -32,6 +33,49 @@ class ChangeLang with ChangeNotifier {
     await prefs.setBool('isEnglish', _isEnglish); // Save language preference
     notifyListeners();
   }
+  Future<void> setEnglish() async {
+    final prefs = await SharedPreferences.getInstance();
+    if(prefs.getBool('isEnglish')!){
+      return;
+    }else{
+      _isEnglish = true;
+      await prefs.setBool('isEnglish', true);
+      notifyListeners();
+    }
+  }
+  Future<void> setArabic() async {
+    final prefs = await SharedPreferences.getInstance();
+    if(!prefs.getBool('isEnglish')!){
+      return;
+    }else{
+      _isEnglish = false;
+      await prefs.setBool('isEnglish', false);
+      notifyListeners();
+    }
+  }
+
+  Future<void> setDark() async {
+    final prefs = await SharedPreferences.getInstance();
+    if(prefs.getBool('isDark')!){
+      return;
+    }else{
+      _isDark = true;
+      await prefs.setBool('isDark', true);
+      notifyListeners();
+    }
+  }
+
+  Future<void> setLight() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.getBool('isDark')!) {
+      return;
+    } else {
+      _isDark = false;
+      await prefs.setBool('isDark', false);
+      notifyListeners();
+    }
+  }
+
 
   // Toggle theme and save the preference
   Future<void> toggleTheme() async {
