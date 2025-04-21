@@ -50,5 +50,12 @@
   "event_date": "Event Date",
   "event_time": "Event Time",
   "choose_date": "Choose Date",
-  "choose_time": "Choose Time"
+  "choose_time": "Choose Time",
+  "add_event": "Add Event",
+  "email": "email",
+  "password": "Password",
+  "forget_password": "Forget Password?",
+  "don't_have_account": "Don’t Have Account ?",
+  " create_account": " Create Account",
+  "login_with_google": "Login With Google"
 }

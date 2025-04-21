@@ -1,4 +1,5 @@
 import 'package:evently/core/providers/change_lang.dart';
+import 'package:evently/core/routes/route_names.dart';
 import 'package:evently/core/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
       ],
       locale: langProvider.locale,
       routes: Routes.myAppRoutes,
+      initialRoute: RouteNames.login,
       // home: OnboardingScreen(),
     );
   }

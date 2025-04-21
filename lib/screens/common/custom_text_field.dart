@@ -6,6 +6,8 @@ class CustomTextField extends StatelessWidget {
   final Color? labelColor;
   final Color? borderColor;
   final Color? inputColor;
+  final Color? prefixIconColor;
+  final Color? suffixIconColor;
   final TextEditingController controller;
   final TextInputType keyboardType;
   final bool obscureText;
@@ -14,6 +16,7 @@ class CustomTextField extends StatelessWidget {
   final VoidCallback? onSuffixPressed;
   final String? Function(String?)? validator;
   final bool enabled;
+  final int? maxLines;
   final int? maxLength;
 
   const CustomTextField({
@@ -29,8 +32,9 @@ class CustomTextField extends StatelessWidget {
     this.onSuffixPressed,
     this.validator,
     this.enabled = true,
-    this.maxLength,
+    this.maxLines,
     this.inputColor,
+    this.prefixIconColor, this.maxLength, this.suffixIconColor,
   });
 
   @override
@@ -41,7 +45,8 @@ class CustomTextField extends StatelessWidget {
       keyboardType: keyboardType,
       obscureText: obscureText,
       validator: validator,
-      maxLines: maxLength,
+      maxLines: maxLines,
+      maxLength: maxLength,
       style: TextStyle(color: inputColor),
       decoration: InputDecoration(
         contentPadding: EdgeInsets.all(20),
@@ -53,26 +58,35 @@ class CustomTextField extends StatelessWidget {
         ),
         prefixIcon:
             prefixIcon != null
-                ? Icon(prefixIcon, color: AppColors.primaryColor)
+                ? Icon(prefixIcon, color: prefixIconColor)
                 : null,
         suffixIcon:
             suffixIcon != null
                 ? IconButton(
-                  icon: Icon(suffixIcon, color: AppColors.primaryColor),
+                  icon: Icon(suffixIcon, color: suffixIconColor ?? AppColors.primaryColor),
                   onPressed: onSuffixPressed,
                 )
                 : null,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.primaryColor, width: 2),
+          borderSide: BorderSide(
+            color: borderColor ?? AppColors.primaryColor,
+            width: 2,
+          ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.primaryColor, width: 2),
+          borderSide: BorderSide(
+            color: borderColor ?? AppColors.primaryColor,
+            width: 2,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.primaryColor, width: 2),
+          borderSide: BorderSide(
+            color: borderColor ?? AppColors.primaryColor,
+            width: 2,
+          ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),

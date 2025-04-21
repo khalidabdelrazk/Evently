@@ -1,7 +1,6 @@
 import 'package:evently/core/providers/change_lang.dart';
 import 'package:evently/screens/common/custom_button.dart';
 import 'package:evently/screens/common/custom_text_field.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -168,7 +167,8 @@ class _NewEventState extends State<NewEvent> {
                       keyboardType: TextInputType.text,
                       prefixIcon: Icons.edit_note,
                       validator: titleValidator,
-                      inputColor: changeLang.isDark ? AppColors.white: AppColors.black,
+                      inputColor:
+                          changeLang.isDark ? AppColors.white : AppColors.black,
                     ),
                     SizedBox(height: height * 0.02),
                     Text(
@@ -270,16 +270,17 @@ class _NewEventState extends State<NewEvent> {
                 ),
               ),
               CustomButton(
-                text: 'Add Event',
+                text: AppLocalizations.of(context)!.add_event,
                 onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    if (kDebugMode) {
-                      print('Event title: ${eventNameController.text}');
-                      print('Event description: ${eventDescController.text}');
-                      print('Date: $selectedDate');
-                      print('Time: $selectedTime');
-                    }
-                  }
+                  _formKey.currentState!.validate();
+                  // if (_formKey.currentState!.validate()) {
+                  //   if (kDebugMode) {
+                  //     print('Event title: ${eventNameController.text}');
+                  //     print('Event description: ${eventDescController.text}');
+                  //     print('Date: $selectedDate');
+                  //     print('Time: $selectedTime');
+                  //   }
+                  // }
                 },
               ),
             ],

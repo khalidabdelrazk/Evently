@@ -8,7 +8,6 @@ import 'home_page.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class FavouritePage extends StatefulWidget {
-
   const FavouritePage({super.key});
 
   @override
@@ -35,7 +34,7 @@ class _FavouritePageState extends State<FavouritePage> {
                 controller: controller,
                 prefixIcon: Icons.search_rounded,
               ),
-              SizedBox(height: height*0.02,),
+              SizedBox(height: height * 0.02),
               Expanded(
                 child: ListView.builder(
                   itemCount: 20,
@@ -47,9 +46,9 @@ class _FavouritePageState extends State<FavouritePage> {
                         width: width,
                         decoration: BoxDecoration(
                           color:
-                          langProvider.isDark
-                              ? Colors.transparent
-                              : AppColors.black,
+                              langProvider.isDark
+                                  ? Colors.transparent
+                                  : AppColors.black,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: AppColors.primaryColor,
@@ -73,20 +72,22 @@ class _FavouritePageState extends State<FavouritePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                width: width * 0.12,
-                                height: width * 0.12,
+                                padding: EdgeInsets.symmetric(horizontal: 5),
                                 decoration: BoxDecoration(
                                   color:
-                                  langProvider.isDark
-                                      ? Colors.transparent
-                                      : AppColors.darkWhite,
+                                      langProvider.isDark
+                                          ? Colors.transparent
+                                          : AppColors.darkWhite,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     HomePage.customText(
-                                      text: AppLocalizations.of(context)!.twenty_one,
+                                      text:
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.twenty_one,
                                       color: AppColors.primaryColor,
                                       fontWeight: FontWeight.w500,
                                       fontSize: 16,
@@ -107,23 +108,28 @@ class _FavouritePageState extends State<FavouritePage> {
 
                                 decoration: BoxDecoration(
                                   color:
-                                  langProvider.isDark
-                                      ? Colors.transparent
-                                      : AppColors.darkWhite,
+                                      langProvider.isDark
+                                          ? Colors.transparent
+                                          : AppColors.darkWhite,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Row(
                                   mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    HomePage.customText(
-                                      text: AppLocalizations.of(context)!.this_is_birthday,
-                                      color:
-                                      langProvider.isDark
-                                          ? AppColors.white
-                                          : AppColors.black,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 18,
+                                    Expanded(
+                                      child: HomePage.customText(
+                                        text:
+                                            AppLocalizations.of(
+                                              context,
+                                            )!.this_is_birthday,
+                                        color:
+                                            langProvider.isDark
+                                                ? AppColors.white
+                                                : AppColors.black,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 18,
+                                      ),
                                     ),
                                     IconButton(
                                       onPressed: () {
@@ -132,7 +138,9 @@ class _FavouritePageState extends State<FavouritePage> {
                                         });
                                       },
                                       icon: Icon(
-                                        love ? Icons.favorite : Icons.favorite_border,
+                                        love
+                                            ? Icons.favorite
+                                            : Icons.favorite_border,
                                         color: AppColors.primaryColor,
                                       ),
                                     ),

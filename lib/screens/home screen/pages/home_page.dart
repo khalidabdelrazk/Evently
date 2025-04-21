@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(height * 0.18),
+        preferredSize: Size.fromHeight(height * 0.2),
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 15),
           decoration: BoxDecoration(
@@ -168,8 +168,9 @@ class _HomePageState extends State<HomePage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              width: width * 0.12,
-                              height: width * 0.12,
+                              padding: EdgeInsets.symmetric(horizontal: 5),
+                              // width: width * 0.15,
+                              // height: width * 0.15,
                               decoration: BoxDecoration(
                                 color:
                                     langProvider.isDark
@@ -181,7 +182,10 @@ class _HomePageState extends State<HomePage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   HomePage.customText(
-                                    text: AppLocalizations.of(context)!.twenty_one,
+                                    text:
+                                        AppLocalizations.of(
+                                          context,
+                                        )!.twenty_one,
                                     color: AppColors.primaryColor,
                                     fontWeight: FontWeight.w500,
                                     fontSize: 16,
@@ -212,7 +216,10 @@ class _HomePageState extends State<HomePage> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   HomePage.customText(
-                                    text: AppLocalizations.of(context)!.this_is_birthday,
+                                    text:
+                                        AppLocalizations.of(
+                                          context,
+                                        )!.this_is_birthday,
                                     color:
                                         langProvider.isDark
                                             ? AppColors.white
@@ -226,10 +233,12 @@ class _HomePageState extends State<HomePage> {
                                         love = !love;
                                       });
                                     },
-                                      icon: Icon(
-                                        love ? Icons.favorite : Icons.favorite_border,
-                                        color: AppColors.primaryColor,
-                                      ),
+                                    icon: Icon(
+                                      love
+                                          ? Icons.favorite
+                                          : Icons.favorite_border,
+                                      color: AppColors.primaryColor,
+                                    ),
                                   ),
                                 ],
                               ),
