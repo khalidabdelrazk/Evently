@@ -1,6 +1,9 @@
+import 'package:evently/core/model/event.dart';
 import 'package:evently/core/providers/change_lang.dart';
+import 'package:evently/firebase/firebase_utils.dart';
 import 'package:evently/screens/common/custom_button.dart';
 import 'package:evently/screens/common/custom_text_field.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -16,12 +19,14 @@ class NewEvent extends StatefulWidget {
 
 class _NewEventState extends State<NewEvent> {
   final _formKey = GlobalKey<FormState>();
-  var changeLang;
+  late ChangeLang changeLang;
   final TextEditingController eventNameController = TextEditingController();
   final TextEditingController eventDescController = TextEditingController();
   int selectedIndex = 0;
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
+  late List<String> tabBarItems;
+  late List<String> images;
 
   Future<void> _pickDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -36,13 +41,15 @@ class _NewEventState extends State<NewEvent> {
               primary: AppColors.primaryColor,
               onPrimary: AppColors.white,
               onSurface: changeLang.isDark ? AppColors.white : AppColors.black,
-              surface: changeLang.isDark ? AppColors.darkBlue : AppColors.white, // 👈 This is the key
+              surface:
+                  changeLang.isDark
+                      ? AppColors.darkBlue
+                      : AppColors.white, // 👈 This is the key
             ),
           ),
           child: child!,
         );
       },
-
     );
     if (picked != null && picked != selectedDate) {
       setState(() {
@@ -62,7 +69,10 @@ class _NewEventState extends State<NewEvent> {
               primary: AppColors.primaryColor,
               onPrimary: AppColors.white,
               onSurface: changeLang.isDark ? AppColors.white : AppColors.black,
-              surface: changeLang.isDark ? AppColors.darkBlue : AppColors.white, // 👈 This is the key
+              surface:
+                  changeLang.isDark
+                      ? AppColors.darkBlue
+                      : AppColors.white, // 👈 This is the key
             ),
           ),
           child: child!,
@@ -81,7 +91,7 @@ class _NewEventState extends State<NewEvent> {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     changeLang = Provider.of<ChangeLang>(context);
-    List<String> tabBarItems = [
+    tabBarItems = [
       AppLocalizations.of(context)!.sport,
       AppLocalizations.of(context)!.birthDay,
       AppLocalizations.of(context)!.meeting,
@@ -92,7 +102,7 @@ class _NewEventState extends State<NewEvent> {
       AppLocalizations.of(context)!.holiday,
       AppLocalizations.of(context)!.eating,
     ];
-    List<String> images = [
+    images = [
       'assets/img/sport.png',
       'assets/img/Birthday2.png',
       'assets/img/meeting.png',
@@ -300,23 +310,31 @@ class _NewEventState extends State<NewEvent> {
               ),
               CustomButton(
                 text: AppLocalizations.of(context)!.add_event,
-                onPressed: () {
-                  _formKey.currentState!.validate();
-                  // if (_formKey.currentState!.validate()) {
-                  //   if (kDebugMode) {
-                  //     print('Event title: ${eventNameController.text}');
-                  //     print('Event description: ${eventDescController.text}');
-                  //     print('Date: $selectedDate');
-                  //     print('Time: $selectedTime');
-                  //   }
-                  // }
-                },
+                onPressed: addEvent,
               ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void addEvent() {
+    _formKey.currentState!.validate();
+    Event event = Event(
+      image: images[selectedIndex],
+      title: eventNameController.text,
+      description: eventDescController.text,
+      eventName: tabBarItems[selectedIndex],
+      dateTime: selectedDate!,
+      time: "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}",
+    );
+    FirebaseUtils.addEvent(event).timeout(Duration(milliseconds: 500),onTimeout: () {
+      if (kDebugMode) {
+        print("data added successfully");
+      }
+    },);
+    Navigator.pop(context);
   }
 
   String? titleValidator(String? txt) {

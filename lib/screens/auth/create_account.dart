@@ -9,7 +9,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../core/providers/change_lang.dart';
 import '../../core/routes/route_names.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CreateAccount extends StatefulWidget {
   const CreateAccount({super.key});

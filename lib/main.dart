@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:evently/core/providers/change_lang.dart';
 import 'package:evently/core/routes/route_names.dart';
 import 'package:evently/core/routes/routes.dart';
@@ -16,7 +17,7 @@ void main() async{
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
+  await FirebaseFirestore.instance.disableNetwork();
   runApp(ChangeNotifierProvider(
     create: (context) => ChangeLang(),
       child: MyApp()
