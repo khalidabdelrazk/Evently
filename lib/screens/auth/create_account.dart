@@ -9,6 +9,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../core/providers/change_lang.dart';
 import '../../core/routes/route_names.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CreateAccount extends StatefulWidget {
   const CreateAccount({super.key});
@@ -30,7 +31,7 @@ class _CreateAccountState extends State<CreateAccount> {
     if (txt == null) {
       return AppLocalizations.of(context)!.empty_field;
     } else if (!emailRegex.hasMatch(txt)) {
-      return 'Invalid Email Address';
+      return AppLocalizations.of(context)!.invalidEmailAddress;
     }
     return null;
   }
@@ -39,7 +40,7 @@ class _CreateAccountState extends State<CreateAccount> {
     if (txt == null) {
       return AppLocalizations.of(context)!.empty_field;
     } else if (txt.length < 6) {
-      return 'Invalid Name';
+      return AppLocalizations.of(context)!.invalidName;
     }
     return null;
   }
@@ -48,7 +49,7 @@ class _CreateAccountState extends State<CreateAccount> {
     if (txt == null) {
       return AppLocalizations.of(context)!.empty_field;
     } else if (txt.length < 8) {
-      return 'Password should be more than or equal 8 characters';
+      return AppLocalizations.of(context)!.passwordShouldBe;
     }
     return null;
   }
@@ -65,7 +66,7 @@ class _CreateAccountState extends State<CreateAccount> {
         iconTheme: IconThemeData(
           color: changeLang.isDark ? AppColors.white : AppColors.black
         ),
-        title: Text('Register',style: TextStyle(
+        title: Text(AppLocalizations.of(context)!.register,style: TextStyle(
             color: changeLang.isDark ? AppColors.white : AppColors.black,
             fontWeight: FontWeight.w700
         ),),
@@ -85,7 +86,7 @@ class _CreateAccountState extends State<CreateAccount> {
                 child: Column(
                   children: [
                     CustomTextField(
-                      label: 'Name',
+                      label: AppLocalizations.of(context)!.name,
                       labelColor: AppColors.gray,
                       controller: _nameController,
                       borderColor: AppColors.gray,
@@ -100,7 +101,7 @@ class _CreateAccountState extends State<CreateAccount> {
                     ),
                     SizedBox(height: height * 0.01),
                     CustomTextField(
-                      label: 'Email',
+                      label: AppLocalizations.of(context)!.email,
                       labelColor: AppColors.gray,
                       controller: _emailController,
                       borderColor: AppColors.gray,
@@ -115,7 +116,7 @@ class _CreateAccountState extends State<CreateAccount> {
                     ),
                     SizedBox(height: height * 0.01),
                     CustomTextField(
-                      label: 'Password',
+                      label: AppLocalizations.of(context)!.password,
                       labelColor: AppColors.gray,
                       controller: _passwordController,
                       borderColor: AppColors.gray,
@@ -142,7 +143,7 @@ class _CreateAccountState extends State<CreateAccount> {
                     ),
                     SizedBox(height: height * 0.01),
                     CustomTextField(
-                      label: 'Re Password',
+                      label: AppLocalizations.of(context)!.rePassword,
                       labelColor: AppColors.gray,
                       controller: _rePasswordController,
                       borderColor: AppColors.gray,
@@ -172,7 +173,7 @@ class _CreateAccountState extends State<CreateAccount> {
               ),
               SizedBox(height: height * 0.01),
               CustomButton(
-                text: 'Create Account',
+                text: AppLocalizations.of(context)!.create_account,
                 onPressed: () {
                   // Todo: Login validation
                   _formKey.currentState!.validate();
@@ -182,7 +183,7 @@ class _CreateAccountState extends State<CreateAccount> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Already Have Account ?',
+                    AppLocalizations.of(context)!.alreadyHaveAccount,
                     style: TextStyle(
                       fontSize: 16,
                       color:
@@ -191,7 +192,7 @@ class _CreateAccountState extends State<CreateAccount> {
                           : AppColors.black,
                     ),
                   ),
-                  CustomTextButton(txt: 'Login',onPressed: () {
+                  CustomTextButton(txt: AppLocalizations.of(context)!.login,onPressed: () {
                     Navigator.pushNamed(context, RouteNames.login);
                   },),
                 ],

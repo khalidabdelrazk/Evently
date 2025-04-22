@@ -16,6 +16,7 @@ class NewEvent extends StatefulWidget {
 
 class _NewEventState extends State<NewEvent> {
   final _formKey = GlobalKey<FormState>();
+  var changeLang;
   final TextEditingController eventNameController = TextEditingController();
   final TextEditingController eventDescController = TextEditingController();
   int selectedIndex = 0;
@@ -25,8 +26,23 @@ class _NewEventState extends State<NewEvent> {
   Future<void> _pickDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
+      initialDate: selectedDate ?? DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(2101),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: AppColors.primaryColor,
+              onPrimary: AppColors.white,
+              onSurface: changeLang.isDark ? AppColors.white : AppColors.black,
+              surface: changeLang.isDark ? AppColors.darkBlue : AppColors.white, // 👈 This is the key
+            ),
+          ),
+          child: child!,
+        );
+      },
+
     );
     if (picked != null && picked != selectedDate) {
       setState(() {
@@ -39,6 +55,19 @@ class _NewEventState extends State<NewEvent> {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: AppColors.primaryColor,
+              onPrimary: AppColors.white,
+              onSurface: changeLang.isDark ? AppColors.white : AppColors.black,
+              surface: changeLang.isDark ? AppColors.darkBlue : AppColors.white, // 👈 This is the key
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null && picked != selectedTime) {
       setState(() {
@@ -51,7 +80,7 @@ class _NewEventState extends State<NewEvent> {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-    var changeLang = Provider.of<ChangeLang>(context);
+    changeLang = Provider.of<ChangeLang>(context);
     List<String> tabBarItems = [
       AppLocalizations.of(context)!.sport,
       AppLocalizations.of(context)!.birthDay,
@@ -187,7 +216,7 @@ class _NewEventState extends State<NewEvent> {
                       labelColor: AppColors.gray,
                       keyboardType: TextInputType.text,
                       validator: titleValidator,
-                      maxLength: 5,
+                      maxLines: 5,
                       inputColor:
                           changeLang.isDark ? AppColors.white : AppColors.black,
                     ),

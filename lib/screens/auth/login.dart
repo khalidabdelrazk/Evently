@@ -29,7 +29,7 @@ class _LoginState extends State<Login> {
     if (txt == null) {
       return AppLocalizations.of(context)!.empty_field;
     } else if (!emailRegex.hasMatch(txt)) {
-      return 'Invalid Email Address';
+      return AppLocalizations.of(context)!.invalidEmailAddress;
     }
     return null;
   }
@@ -38,7 +38,7 @@ class _LoginState extends State<Login> {
     if (txt == null) {
       return AppLocalizations.of(context)!.empty_field;
     } else if (txt.length < 8) {
-      return 'Password should be more than or equal 8 characters';
+      return AppLocalizations.of(context)!.passwordShouldBe;
     }
     return null;
   }
@@ -66,7 +66,7 @@ class _LoginState extends State<Login> {
                   child: Column(
                     children: [
                       CustomTextField(
-                        label: 'Email',
+                        label: AppLocalizations.of(context)!.email,
                         labelColor: AppColors.gray,
                         controller: _emailController,
                         borderColor: AppColors.gray,
@@ -81,7 +81,7 @@ class _LoginState extends State<Login> {
                       ),
                       SizedBox(height: height * 0.01),
                       CustomTextField(
-                        label: 'Password',
+                        label: AppLocalizations.of(context)!.password,
                         labelColor: AppColors.gray,
                         controller: _passwordController,
                         borderColor: AppColors.gray,
@@ -113,7 +113,7 @@ class _LoginState extends State<Login> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     CustomTextButton(
-                      txt: 'Forget Password',
+                      txt: AppLocalizations.of(context)!.forget_password,
                       onPressed: () {
                         Navigator.pushNamed(context, RouteNames.forgetPassword);
                       },
@@ -122,7 +122,7 @@ class _LoginState extends State<Login> {
                 ),
                 SizedBox(height: height * 0.01),
                 CustomButton(
-                  text: 'Login',
+                  text: AppLocalizations.of(context)!.login,
                   onPressed: () {
                     // Todo: Login validation
                     _formKey.currentState!.validate();
@@ -132,7 +132,7 @@ class _LoginState extends State<Login> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Don’t Have Account ?',
+                      AppLocalizations.of(context)!.doNotHaveAccount,
                       style: TextStyle(
                         fontSize: 16,
                         color:
@@ -141,7 +141,7 @@ class _LoginState extends State<Login> {
                                 : AppColors.black,
                       ),
                     ),
-                    CustomTextButton(txt: 'Create Account',onPressed: () {
+                    CustomTextButton(txt: AppLocalizations.of(context)!.create_account,onPressed: () {
                       Navigator.pushNamed(context, RouteNames.createAccount);
                     },),
                   ],
@@ -158,7 +158,7 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                     Text(
-                      "or",
+                      AppLocalizations.of(context)!.or,
                       style: TextStyle(
                         color:
                             changeLang.isDark
@@ -196,7 +196,7 @@ class _LoginState extends State<Login> {
                       Icon(AntDesign.google_outline, size: 30),
                       SizedBox(width: width * 0.01),
                       Text(
-                        'Login With Google',
+                        AppLocalizations.of(context)!.login_with_google,
                         style: TextStyle(
                           color: AppColors.primaryColor,
                           fontWeight: FontWeight.w500,

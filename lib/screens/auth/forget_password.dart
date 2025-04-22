@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/providers/change_lang.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ForgetPassword extends StatelessWidget {
   const ForgetPassword({super.key});
@@ -19,7 +20,7 @@ class ForgetPassword extends StatelessWidget {
         iconTheme: IconThemeData(
           color: changeLang.isDark ? AppColors.white : AppColors.black,
         ),
-        title: Text("Forget Password",style: TextStyle(
+        title: Text(AppLocalizations.of(context)!.forget_password,style: TextStyle(
           color: changeLang.isDark ? AppColors.white : AppColors.black,
           fontWeight: FontWeight.w700
         ),),
@@ -38,7 +39,7 @@ class ForgetPassword extends StatelessWidget {
               ),
             ),
             SizedBox(height: height*0.04,),
-            CustomButton(text: 'Reset Password',onPressed: () {
+            CustomButton(text: AppLocalizations.of(context)!.rePassword,onPressed: () {
 
             },)
           ],
