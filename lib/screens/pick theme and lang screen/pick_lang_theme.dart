@@ -7,7 +7,7 @@ import '../../core/colors/app_colors.dart';
 import '../common/custom_button.dart';
 import 'package:evently/core/providers/change_lang.dart';
 import 'package:evently/core/routes/route_names.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:evently/src/generated/i18n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 class PickLangTheme extends StatelessWidget {

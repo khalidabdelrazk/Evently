@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:evently/core/model/event.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 class FirebaseUtils {
   static CollectionReference<Event> getEventCollection() {

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:evently/core/colors/app_colors.dart';
 import 'package:evently/core/providers/change_lang.dart';
 import 'package:evently/core/routes/route_names.dart';
@@ -7,8 +8,11 @@ import 'package:evently/screens/home%20screen/pages/map_page.dart';
 import 'package:evently/screens/new%20event/new_event.dart';
 import 'package:evently/screens/home%20screen/pages/profile_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:evently/src/generated/i18n/app_localizations.dart';
 import 'package:provider/provider.dart';
+
+import '../../core/model/event.dart';
+import '../../firebase/firebase_utils.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -28,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     var langProvider = Provider.of<ChangeLang>(context);
     return Scaffold(
       body: pages[currentIndex],
@@ -107,4 +112,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+
 }

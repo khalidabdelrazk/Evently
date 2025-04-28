@@ -35,11 +35,13 @@ class PageViewBody extends StatelessWidget {
         SizedBox(height: height * 0.05),
         Text(title, style: customStyle()),
         SizedBox(height: height * 0.05),
-        Text(
-          desc,
-          style: customStyle(
-            fontSize: 18,
-            color: langProvider.isDark ? AppColors.darkWhite : AppColors.black,
+        Expanded(
+          child: Text(
+            desc,
+            style: customStyle(
+              fontSize: 18,
+              color: langProvider.isDark ? AppColors.darkWhite : AppColors.black,
+            ),
           ),
         ),
       ],

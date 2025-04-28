@@ -5,9 +5,10 @@ import 'package:evently/screens/common/custom_button.dart';
 import 'package:evently/screens/common/custom_text_field.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:evently/src/generated/i18n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../../core/colors/app_colors.dart';
+import '../../core/providers/event_list_provider.dart';
 import '../common/tabbar_item.dart';
 
 class NewEvent extends StatefulWidget {
@@ -27,6 +28,7 @@ class _NewEventState extends State<NewEvent> {
   TimeOfDay? selectedTime;
   late List<String> tabBarItems;
   late List<String> images;
+  late EventListProvider eventListProvider;
 
   Future<void> _pickDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -72,7 +74,7 @@ class _NewEventState extends State<NewEvent> {
               surface:
                   changeLang.isDark
                       ? AppColors.darkBlue
-                      : AppColors.white, // 👈 This is the key
+                      : AppColors.white,
             ),
           ),
           child: child!,
@@ -88,6 +90,7 @@ class _NewEventState extends State<NewEvent> {
 
   @override
   Widget build(BuildContext context) {
+    eventListProvider = Provider.of<EventListProvider>(context);
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     changeLang = Provider.of<ChangeLang>(context);
@@ -334,6 +337,9 @@ class _NewEventState extends State<NewEvent> {
         print("data added successfully");
       }
     },);
+
+    eventListProvider.getAllEvent();
+
     Navigator.pop(context);
   }
 

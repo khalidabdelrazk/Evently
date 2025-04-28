@@ -6,7 +6,7 @@ import 'package:evently/screens/common/toggle_animated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:evently/src/generated/i18n/app_localizations.dart';
 
 import '../../core/providers/change_lang.dart';
 import '../../core/routes/route_names.dart';

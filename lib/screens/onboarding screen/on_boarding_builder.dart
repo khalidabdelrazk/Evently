@@ -2,11 +2,10 @@ import 'package:evently/core/colors/app_colors.dart';
 import 'package:evently/core/routes/route_names.dart';
 import 'package:evently/screens/onboarding%20screen/widgets/page_view_body.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:evently/src/generated/i18n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/providers/change_lang.dart';
-
 
 class OnBoardingBuilder extends StatefulWidget {
   const OnBoardingBuilder({super.key});
@@ -19,14 +18,13 @@ class _OnBoardingBuilderState extends State<OnBoardingBuilder> {
   final PageController _controller = PageController();
   int _currentPage = 0;
 
-
   void _next() {
     if (_currentPage < 2) {
       _controller.nextPage(
         duration: Duration(milliseconds: 300),
         curve: Curves.ease,
       );
-    }else{
+    } else {
       Navigator.pushReplacementNamed(context, RouteNames.homeScreen);
     }
   }
@@ -40,15 +38,13 @@ class _OnBoardingBuilderState extends State<OnBoardingBuilder> {
     }
   }
 
-  Widget customIconButton(IconData icon, void Function() onPressed ){
+  Widget customIconButton(IconData icon, void Function() onPressed) {
     return Container(
-      width: MediaQuery.of(context).size.width*0.12,
+      width: MediaQuery.of(context).size.width * 0.12,
+      height: MediaQuery.of(context).size.width * 0.12,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(360),
-        border: Border.all(
-          color: AppColors.primaryColor,
-          width: 2,
-        ),
+        border: Border.all(color: AppColors.primaryColor, width: 2),
         // shape: BoxShape.circle,
       ),
       child: IconButton(
@@ -87,9 +83,13 @@ class _OnBoardingBuilderState extends State<OnBoardingBuilder> {
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        title: Image.asset('assets/img/evently_title.png', fit: BoxFit.fitHeight,height: height*0.1,),
+        title: Image.asset(
+          'assets/img/evently_title.png',
+          fit: BoxFit.fitHeight,
+          height: height * 0.1,
+        ),
         centerTitle: true,
-        toolbarHeight: height*0.1,
+        toolbarHeight: height * 0.1,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -105,34 +105,50 @@ class _OnBoardingBuilderState extends State<OnBoardingBuilder> {
                     _currentPage = index;
                   });
                 },
-                itemBuilder:
-                    (context, index) {
-                      return PageViewBody(
-                        image: pages[index]["image"]!,
-                        title: pages[index]["title"]!,
-                        desc: pages[index]["desc"]!,
-                      );
-                    },
+                itemBuilder: (context, index) {
+                  return PageViewBody(
+                    image: pages[index]["image"]!,
+                    title: pages[index]["title"]!,
+                    desc: pages[index]["desc"]!,
+                  );
+                },
               ),
             ),
             SizedBox(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _currentPage != 0 ? customIconButton(langProvider.isEnglish ? Icons.arrow_back_ios :Icons.arrow_forward_ios,_back): SizedBox(width: width*0.12,),
+                  _currentPage != 0
+                      ? customIconButton(
+                        langProvider.isEnglish
+                            ? Icons.arrow_back_ios
+                            : Icons.arrow_forward_ios,
+                        _back,
+                      )
+                      : SizedBox(width: width * 0.12),
                   Row(
                     children: List.generate(pages.length, (index) {
                       return Padding(
                         padding: EdgeInsets.all(2),
                         child: Container(
-                          width: _currentPage == index ? 15: 5,
-                          height: 3,
-                          color: Colors.green,
+                          width: _currentPage == index ? 15 : 5,
+                          height: 5,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(
+                              10,
+                            ), // Make it rounded
+                            color: Colors.green,
+                          ),
                         ),
                       );
-                    },)
+                    }),
                   ),
-                  customIconButton(!langProvider.isEnglish ? Icons.arrow_back_ios :Icons.arrow_forward_ios,_next),
+                  customIconButton(
+                    !langProvider.isEnglish
+                        ? Icons.arrow_back_ios
+                        : Icons.arrow_forward_ios,
+                    _next,
+                  ),
                 ],
               ),
             ),

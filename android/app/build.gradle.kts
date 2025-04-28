@@ -47,4 +47,7 @@ flutter {
 }
 dependencies {
     implementation("androidx.appcompat:appcompat:1.4.0")
+    implementation("androidx.window:window:1.0.0")
+    implementation("com.google.android.gms:play-services-base:18.3.0")
+    // Other dependencies...
 }

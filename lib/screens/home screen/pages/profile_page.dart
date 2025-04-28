@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../../../core/colors/app_colors.dart';
 import '../../../core/providers/change_lang.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:evently/src/generated/i18n/app_localizations.dart';
 
 import '../common/show_modal_bottom_sheet.dart';
 

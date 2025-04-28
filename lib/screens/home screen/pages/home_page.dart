@@ -1,10 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:evently/core/providers/event_list_provider.dart';
+import 'package:evently/screens/home%20screen/common/event_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/colors/app_colors.dart';
+import '../../../core/model/event.dart';
 import '../../../core/providers/change_lang.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:evently/src/generated/i18n/app_localizations.dart';
 
+import '../../../firebase/firebase_utils.dart';
 import '../../common/tabbar_item.dart';
 
 class HomePage extends StatefulWidget {
@@ -35,6 +40,10 @@ class _HomePageState extends State<HomePage> {
   bool love = false;
   @override
   Widget build(BuildContext context) {
+    var eventListProvider= Provider.of<EventListProvider>(context);
+    if(eventListProvider.getEventList.isEmpty){
+      eventListProvider.getAllEvent();
+    }
     List<String> tabBarItems = [
       AppLocalizations.of(context)!.all,
       AppLocalizations.of(context)!.sport,
@@ -52,8 +61,9 @@ class _HomePageState extends State<HomePage> {
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(height * 0.2),
+        preferredSize: Size.fromHeight(height * 0.17),
         child: Container(
+          height: height,
           padding: EdgeInsets.symmetric(horizontal: 15),
           decoration: BoxDecoration(
             color:
@@ -133,121 +143,9 @@ class _HomePageState extends State<HomePage> {
           children: [
             Expanded(
               child: ListView.builder(
-                itemCount: 20,
+                itemCount: eventListProvider.getEventList.length,
                 itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
-                    child: Container(
-                      height: height * 0.25,
-                      width: width,
-                      decoration: BoxDecoration(
-                        color:
-                            langProvider.isDark
-                                ? Colors.transparent
-                                : AppColors.black,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: AppColors.primaryColor,
-                          width: 2,
-                        ),
-                        image: DecorationImage(
-                          image: AssetImage('assets/img/Birthday.png'),
-                          scale: 5,
-                        ),
-                      ),
-                      child: Container(
-                        padding: EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('assets/img/Happy Whale.png'),
-                            fit: BoxFit.fitHeight,
-                          ),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              padding: EdgeInsets.symmetric(horizontal: 5),
-                              // width: width * 0.15,
-                              // height: width * 0.15,
-                              decoration: BoxDecoration(
-                                color:
-                                    langProvider.isDark
-                                        ? Colors.transparent
-                                        : AppColors.darkWhite,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  HomePage.customText(
-                                    text:
-                                        AppLocalizations.of(
-                                          context,
-                                        )!.twenty_one,
-                                    color: AppColors.primaryColor,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 16,
-                                  ),
-                                  HomePage.customText(
-                                    text: AppLocalizations.of(context)!.nov,
-                                    color: AppColors.primaryColor,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 16,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              width: width,
-                              height: height * 0.045,
-                              padding: EdgeInsets.symmetric(horizontal: 10),
-
-                              decoration: BoxDecoration(
-                                color:
-                                    langProvider.isDark
-                                        ? Colors.transparent
-                                        : AppColors.darkWhite,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  HomePage.customText(
-                                    text:
-                                        AppLocalizations.of(
-                                          context,
-                                        )!.this_is_birthday,
-                                    color:
-                                        langProvider.isDark
-                                            ? AppColors.white
-                                            : AppColors.black,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 18,
-                                  ),
-                                  IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        love = !love;
-                                      });
-                                    },
-                                    icon: Icon(
-                                      love
-                                          ? Icons.favorite
-                                          : Icons.favorite_border,
-                                      color: AppColors.primaryColor,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
+                  return EventItem(event: eventListProvider.getEventList[index],);
                 },
               ),
             ),
@@ -275,91 +173,5 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-}
 
-/*
-SizedBox(
-                  height: height * 0.07,
-                  child: ListView.builder(
-                    itemCount: 7,
-                    padding: EdgeInsets.zero,
-                    scrollDirection: Axis.horizontal,
-                    clipBehavior: Clip.none,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          width: width / 5,
-                          height: height * 0.00003,
-                          color: Colors.red,
-                        ),
-                      );
-                    },
-                  ),
-                )
-PreferredSize(
-        preferredSize: Size.fromHeight(height * 0.18),
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 15),
-          decoration: BoxDecoration(
-            color:
-            langProvider.isDark
-                ? AppColors.darkBlue
-                : AppColors.primaryColor,
-            borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(30),
-              bottomRight: Radius.circular(30),
-            ),
-          ),
-          child: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    customText(text: AppLocalizations.of(context)!.welcome),
-                    customText(
-                      text: AppLocalizations.of(context)!.john,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Icon(Icons.location_on_outlined),
-                    SizedBox(width: 5),
-                    customText(
-                      text: AppLocalizations.of(context)!.cairo,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: height * 0.07,
-                  child: ListView.builder(
-                    itemCount: 7,
-                    padding: EdgeInsets.zero,
-                    scrollDirection: Axis.horizontal,
-                    clipBehavior: Clip.none,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          width: width / 5,
-                          height: height * 0.00003,
-                          color: Colors.red,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      )
- */
+}
