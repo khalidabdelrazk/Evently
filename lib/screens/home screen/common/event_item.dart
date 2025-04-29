@@ -2,10 +2,9 @@ import 'package:evently/core/model/event.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:evently/src/generated/i18n/app_localizations.dart';
-
 import '../../../core/colors/app_colors.dart';
 import '../../../core/providers/change_lang.dart';
+import '../../../core/providers/event_list_provider.dart';
 import '../pages/home_page.dart';
 
 class EventItem extends StatelessWidget {
@@ -15,6 +14,7 @@ class EventItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var langProvider = Provider.of<ChangeLang>(context);
+    var eventListProvider= Provider.of<EventListProvider>(context);
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Padding(
@@ -22,6 +22,7 @@ class EventItem extends StatelessWidget {
       child: Container(
         height: height * 0.25,
         width: width,
+        clipBehavior: Clip.antiAlias,
         padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: langProvider.isDark ? Colors.transparent : AppColors.black,
@@ -29,6 +30,7 @@ class EventItem extends StatelessWidget {
           border: Border.all(color: AppColors.primaryColor, width: 2),
           image: DecorationImage(
             image: AssetImage(event.image),
+            fit: BoxFit.cover,
             scale: 5,
           ),
         ),
@@ -90,11 +92,9 @@ class EventItem extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () {
-                      // setState(() {
-                      //   love = !love;
-                      // });
+                      eventListProvider.toggleFav(event);
                     },
-                    icon: Icon(Icons.favorite_border, color: AppColors.primaryColor),
+                    icon: Icon(event.isFavourite? Icons.favorite : Icons.favorite_border, color: AppColors.primaryColor),
                   ),
                 ],
               ),

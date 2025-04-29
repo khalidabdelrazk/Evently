@@ -1,15 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:evently/core/providers/event_list_provider.dart';
 import 'package:evently/screens/home%20screen/common/event_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../../core/colors/app_colors.dart';
-import '../../../core/model/event.dart';
 import '../../../core/providers/change_lang.dart';
 import 'package:evently/src/generated/i18n/app_localizations.dart';
-
-import '../../../firebase/firebase_utils.dart';
 import '../../common/tabbar_item.dart';
 
 class HomePage extends StatefulWidget {
@@ -36,116 +31,55 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int selectedIndex = 0;
-  bool love = false;
+  late EventListProvider eventListProvider;
+
   @override
-  Widget build(BuildContext context) {
-    var eventListProvider= Provider.of<EventListProvider>(context);
-    if(eventListProvider.getEventList.isEmpty){
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    eventListProvider = Provider.of<EventListProvider>(context);
+    eventListProvider.initEventTypesList(context);
+
+    // Fetch events if the list is empty
+    if (!eventListProvider.hasFetchedEvents) {
       eventListProvider.getAllEvent();
     }
-    List<String> tabBarItems = [
-      AppLocalizations.of(context)!.all,
-      AppLocalizations.of(context)!.sport,
-      AppLocalizations.of(context)!.birthDay,
-      AppLocalizations.of(context)!.meeting,
-      AppLocalizations.of(context)!.gaming,
-      AppLocalizations.of(context)!.workshop,
-      AppLocalizations.of(context)!.book_club,
-      AppLocalizations.of(context)!.exhibition,
-      AppLocalizations.of(context)!.holiday,
-      AppLocalizations.of(context)!.eating,
-    ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
     var langProvider = Provider.of<ChangeLang>(context);
-    double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(height * 0.17),
-        child: Container(
-          height: height,
-          padding: EdgeInsets.symmetric(horizontal: 15),
-          decoration: BoxDecoration(
-            color:
-                langProvider.isDark
-                    ? AppColors.darkBlue
-                    : AppColors.primaryColor,
-            borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(30),
-              bottomRight: Radius.circular(30),
-            ),
-          ),
-          child: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    HomePage.customText(
-                      text: AppLocalizations.of(context)!.welcome,
-                    ),
-                    HomePage.customText(
-                      text: AppLocalizations.of(context)!.john,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ],
-                ),
-                SizedBox(height: height * 0.013),
-                Row(
-                  children: [
-                    Icon(Icons.location_on_outlined),
-                    SizedBox(width: 5),
-                    HomePage.customText(
-                      text: AppLocalizations.of(context)!.cairo,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ],
-                ),
-                SizedBox(height: height * 0.013),
-
-                DefaultTabController(
-                  length: tabBarItems.length,
-                  initialIndex: selectedIndex,
-                  child: TabBar(
-                    dividerHeight: 0,
-                    padding: EdgeInsets.zero,
-                    tabAlignment: TabAlignment.start,
-                    isScrollable: true,
-                    dividerColor: Colors.transparent,
-                    automaticIndicatorColorAdjustment: false,
-                    indicatorColor: Colors.transparent,
-                    onTap: (value) {
-                      setState(() {
-                        selectedIndex = value;
-                      });
-                    },
-                    tabs:
-                        tabBarItems.map((item) {
-                          return TabBarItem(
-                            txt: item,
-                            isSelected:
-                                selectedIndex == tabBarItems.indexOf(item),
-                          );
-                        }).toList(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+        child: _buildAppBar(context, langProvider),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             Expanded(
-              child: ListView.builder(
+              child: eventListProvider.getEventList.isEmpty
+                  ? Center(
+                child: Center(
+                  child: Text(
+                    "No Added Events yet",
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: langProvider.isDark
+                          ? AppColors.white
+                          : AppColors.black,
+                    ),
+                  ),
+                ),
+              )
+                  : ListView.builder(
                 itemCount: eventListProvider.getEventList.length,
                 itemBuilder: (context, index) {
-                  return EventItem(event: eventListProvider.getEventList[index],);
+                  return EventItem(
+                    event: eventListProvider.getEventList[index],
+                  );
                 },
               ),
             ),
@@ -155,23 +89,76 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget tabItem({required String txt, bool isSelected = false}) {
+  // Method to build the AppBar
+  Widget _buildAppBar(BuildContext context, ChangeLang langProvider) {
+    double height = MediaQuery.of(context).size.height;
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+      height: height,
+      padding: EdgeInsets.symmetric(horizontal: 15),
       decoration: BoxDecoration(
-        color: isSelected ? AppColors.white : Colors.transparent,
-        borderRadius: BorderRadius.circular(26),
-        border: Border.all(color: AppColors.white, width: 2),
+        color: langProvider.isDark
+            ? AppColors.darkBlue
+            : AppColors.primaryColor,
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(30),
+          bottomRight: Radius.circular(30),
+        ),
       ),
-      child: Text(
-        txt,
-        style: TextStyle(
-          color: isSelected ? AppColors.primaryColor : AppColors.white,
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            HomePage.customText(text: AppLocalizations.of(context)!.welcome),
+            HomePage.customText(
+              text: AppLocalizations.of(context)!.john,
+              fontSize: 24,
+              fontWeight: FontWeight.w700,
+            ),
+            SizedBox(height: height * 0.013),
+            Row(
+              children: [
+                Icon(Icons.location_on_outlined),
+                SizedBox(width: 5),
+                HomePage.customText(
+                  text: AppLocalizations.of(context)!.cairo,
+                  fontWeight: FontWeight.w700,
+                ),
+              ],
+            ),
+            SizedBox(height: height * 0.013),
+            _buildTabBar(),
+          ],
         ),
       ),
     );
   }
 
+  // Method to build TabBar
+  Widget _buildTabBar() {
+    return DefaultTabController(
+      length: eventListProvider.getEventTypesList.length,
+      initialIndex: eventListProvider.getSelectedIndex,
+      child: TabBar(
+        dividerHeight: 0,
+        padding: EdgeInsets.zero,
+        tabAlignment: TabAlignment.start,
+        isScrollable: true,
+        dividerColor: Colors.transparent,
+        automaticIndicatorColorAdjustment: false,
+        indicatorColor: Colors.transparent,
+        onTap: (value) {
+          eventListProvider.changeSelectedIndex(value);
+          eventListProvider.getAllEvent();
+        },
+        tabs: eventListProvider.getEventTypesList.map((item) {
+          return TabBarItem(
+            txt: item,
+            isSelected: eventListProvider.getSelectedIndex ==
+                eventListProvider.getEventTypesList.indexOf(item),
+          );
+        }).toList(),
+      ),
+    );
+  }
 }
+

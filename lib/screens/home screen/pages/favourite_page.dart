@@ -1,11 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:evently/core/model/event.dart';
-import 'package:evently/firebase/firebase_utils.dart';
 import 'package:evently/screens/common/custom_text_field.dart';
 import 'package:evently/screens/home%20screen/common/event_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../../core/colors/app_colors.dart';
 import '../../../core/providers/change_lang.dart';
 import '../../../core/providers/event_list_provider.dart';
@@ -18,18 +14,24 @@ class FavouritePage extends StatefulWidget {
 }
 
 class _FavouritePageState extends State<FavouritePage> {
-  bool love = false;
   final TextEditingController controller = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    // Fetch favorite events on page initialization
+    Provider.of<EventListProvider>(context, listen: false).getFavEvent();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // Get the event list provider
     var eventListProvider = Provider.of<EventListProvider>(context);
-    if (eventListProvider.getEventList.isEmpty) {
-      eventListProvider.getFavEvent();
-    }
     var langProvider = Provider.of<ChangeLang>(context);
+
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -45,22 +47,26 @@ class _FavouritePageState extends State<FavouritePage> {
               ),
               SizedBox(height: height * 0.02),
               Expanded(
-                child:
-                    eventListProvider.getFavEventList.isEmpty
-                        ? Center(
-                          child: Text(
-                            "There is No Favourite Events",
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        )
-                        : ListView.builder(
-                          itemCount: eventListProvider.getFavEventList.length,
-                          itemBuilder: (context, index) {
-                            return EventItem(
-                              event: eventListProvider.getFavEventList[index],
-                            );
-                          },
-                        ),
+                child: eventListProvider.getFavEventList.isEmpty
+                    ? Center(
+                  child: Text(
+                    "There are no favourite events",
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: langProvider.isDark
+                          ? AppColors.white
+                          : AppColors.black,
+                    ),
+                  ),
+                )
+                    : ListView.builder(
+                  itemCount: eventListProvider.getFavEventList.length,
+                  itemBuilder: (context, index) {
+                    return EventItem(
+                      event: eventListProvider.getFavEventList[index],
+                    );
+                  },
+                ),
               ),
             ],
           ),

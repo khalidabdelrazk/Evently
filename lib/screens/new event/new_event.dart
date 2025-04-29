@@ -338,6 +338,7 @@ class _NewEventState extends State<NewEvent> {
       }
     },);
 
+    eventListProvider.setFalse();
     eventListProvider.getAllEvent();
 
     Navigator.pop(context);
