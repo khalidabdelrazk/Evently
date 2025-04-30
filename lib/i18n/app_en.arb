@@ -67,5 +67,7 @@
   "login_with_google": "Login With Google",
   "invalidEmailAddress": "Invalid Email Address",
   "invalidName": "Invalid Name",
-  "passwordShouldBe": "Password should be more than or equal 8 characters"
+  "passwordShouldBe": "Password should be more than or equal 8 characters",
+  "editEvent": "Edit Event",
+  "confirm": "Confirm"
 }

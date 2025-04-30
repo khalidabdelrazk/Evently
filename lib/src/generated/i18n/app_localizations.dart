@@ -508,6 +508,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password should be more than or equal 8 characters'**
   String get passwordShouldBe;
+
+  /// No description provided for @editEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Event'**
+  String get editEvent;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

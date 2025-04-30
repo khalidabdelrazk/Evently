@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Event {
   static const String collectionName = 'Event';
   String id;
@@ -38,7 +40,10 @@ class Event {
         id: data["id"],
         image: data["image"],
         title: data["title"],
-        dateTime: DateTime.fromMillisecondsSinceEpoch(data["dateTime"]),
+        dateTime:
+            data["dateTime"] is Timestamp
+                ? (data["dateTime"] as Timestamp).toDate()
+                : DateTime.fromMillisecondsSinceEpoch(data["dateTime"]),
         description: data["description"],
         eventName: data["eventName"],
         time: data["time"],

@@ -214,4 +214,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get passwordShouldBe => 'يجب أن تكون كلمة المرور 8 أحرف أو أكثر';
+
+  @override
+  String get editEvent => 'Edit Event';
+
+  @override
+  String get confirm => 'Confirm';
 }

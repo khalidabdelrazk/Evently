@@ -1,5 +1,7 @@
 import 'package:evently/core/providers/event_list_provider.dart';
+import 'package:evently/core/routes/route_names.dart';
 import 'package:evently/screens/home%20screen/common/event_item.dart';
+import 'package:evently/screens/new%20event/new_event.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/colors/app_colors.dart';
@@ -37,8 +39,9 @@ class _HomePageState extends State<HomePage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     eventListProvider = Provider.of<EventListProvider>(context);
-    eventListProvider.initEventTypesList(context);
-
+    if (eventListProvider.getEventTypesList.isEmpty) {
+      eventListProvider.initEventTypesList(context);
+    }
     // Fetch events if the list is empty
     if (!eventListProvider.hasFetchedEvents) {
       eventListProvider.getAllEvent();
@@ -60,28 +63,53 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: [
             Expanded(
-              child: eventListProvider.getEventList.isEmpty
-                  ? Center(
-                child: Center(
-                  child: Text(
-                    "No Added Events yet",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: langProvider.isDark
-                          ? AppColors.white
-                          : AppColors.black,
-                    ),
-                  ),
-                ),
-              )
-                  : ListView.builder(
-                itemCount: eventListProvider.getEventList.length,
-                itemBuilder: (context, index) {
-                  return EventItem(
-                    event: eventListProvider.getEventList[index],
-                  );
-                },
-              ),
+              child:
+                  eventListProvider.getEventList.isEmpty
+                      ? Center(
+                        child: Center(
+                          child: Text(
+                            "No Added Events yet",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color:
+                                  langProvider.isDark
+                                      ? AppColors.white
+                                      : AppColors.black,
+                            ),
+                          ),
+                        ),
+                      )
+                      : ListView.builder(
+                        itemCount: eventListProvider.getEventList.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => NewEvent(
+                                        event:
+                                            eventListProvider
+                                                .getEventList[index],
+                                        title:
+                                            AppLocalizations.of(
+                                              context,
+                                            )!.editEvent,
+                                        buttonText:
+                                            AppLocalizations.of(
+                                              context,
+                                            )!.confirm,
+                                      ),
+                                ),
+                              );
+                            },
+                            child: EventItem(
+                              event: eventListProvider.getEventList[index],
+                            ),
+                          );
+                        },
+                      ),
             ),
           ],
         ),
@@ -96,9 +124,8 @@ class _HomePageState extends State<HomePage> {
       height: height,
       padding: EdgeInsets.symmetric(horizontal: 15),
       decoration: BoxDecoration(
-        color: langProvider.isDark
-            ? AppColors.darkBlue
-            : AppColors.primaryColor,
+        color:
+            langProvider.isDark ? AppColors.darkBlue : AppColors.primaryColor,
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(30),
           bottomRight: Radius.circular(30),
@@ -150,15 +177,16 @@ class _HomePageState extends State<HomePage> {
           eventListProvider.changeSelectedIndex(value);
           eventListProvider.getAllEvent();
         },
-        tabs: eventListProvider.getEventTypesList.map((item) {
-          return TabBarItem(
-            txt: item,
-            isSelected: eventListProvider.getSelectedIndex ==
-                eventListProvider.getEventTypesList.indexOf(item),
-          );
-        }).toList(),
+        tabs:
+            eventListProvider.getEventTypesList.map((item) {
+              return TabBarItem(
+                txt: item,
+                isSelected:
+                    eventListProvider.getSelectedIndex ==
+                    eventListProvider.getEventTypesList.indexOf(item),
+              );
+            }).toList(),
       ),
     );
   }
 }
-

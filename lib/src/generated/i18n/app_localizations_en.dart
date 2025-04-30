@@ -214,4 +214,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passwordShouldBe => 'Password should be more than or equal 8 characters';
+
+  @override
+  String get editEvent => 'Edit Event';
+
+  @override
+  String get confirm => 'Confirm';
 }

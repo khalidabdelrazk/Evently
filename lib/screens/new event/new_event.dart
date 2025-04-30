@@ -1,5 +1,6 @@
 import 'package:evently/core/model/event.dart';
 import 'package:evently/core/providers/change_lang.dart';
+import 'package:evently/core/routes/route_names.dart';
 import 'package:evently/firebase/firebase_utils.dart';
 import 'package:evently/screens/common/custom_button.dart';
 import 'package:evently/screens/common/custom_text_field.dart';
@@ -12,7 +13,10 @@ import '../../core/providers/event_list_provider.dart';
 import '../common/tabbar_item.dart';
 
 class NewEvent extends StatefulWidget {
-  const NewEvent({super.key});
+  final Event? event;
+  final String? title;
+  final String? buttonText;
+  const NewEvent({super.key, this.event, this.title, this.buttonText});
 
   @override
   State<NewEvent> createState() => _NewEventState();
@@ -21,14 +25,60 @@ class NewEvent extends StatefulWidget {
 class _NewEventState extends State<NewEvent> {
   final _formKey = GlobalKey<FormState>();
   late ChangeLang changeLang;
-  final TextEditingController eventNameController = TextEditingController();
-  final TextEditingController eventDescController = TextEditingController();
+  TextEditingController eventNameController = TextEditingController();
+  TextEditingController eventDescController = TextEditingController();
   int selectedIndex = 0;
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
-  late List<String> tabBarItems;
-  late List<String> images;
   late EventListProvider eventListProvider;
+  late double height;
+  late double width;
+  late List<String> eventTypes;
+  final List<String> images = [
+    'assets/img/sport.png',
+    'assets/img/Birthday2.png',
+    'assets/img/meeting.png',
+    'assets/img/gaming.png',
+    'assets/img/workshop.png',
+    'assets/img/book club.png',
+    'assets/img/exhibtation.png',
+    'assets/img/holiday.png',
+    'assets/img/eating.png',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    eventNameController = TextEditingController(
+      text: widget.event?.title ?? '',
+    );
+    eventDescController = TextEditingController(
+      text: widget.event?.description ?? '',
+    );
+    selectedDate = widget.event?.dateTime;
+    selectedTime = timeFromString(widget.event?.time);
+    selectedIndex =
+        !images.contains(widget.event?.image ?? '')
+            ? 0
+            : images.indexOf(widget.event?.image ?? '');
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    eventListProvider = Provider.of<EventListProvider>(context);
+  }
+
+  TimeOfDay? timeFromString(String? timeString) {
+    if (timeString == null || !timeString.contains(':')) return null;
+    final parts = timeString.split(':');
+    if (parts.length != 2) return null;
+    final hour = int.tryParse(parts[0]);
+    final minute = int.tryParse(parts[1]);
+    if (hour == null || minute == null) return null;
+    return TimeOfDay(hour: hour, minute: minute);
+  }
 
   Future<void> _pickDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -43,10 +93,7 @@ class _NewEventState extends State<NewEvent> {
               primary: AppColors.primaryColor,
               onPrimary: AppColors.white,
               onSurface: changeLang.isDark ? AppColors.white : AppColors.black,
-              surface:
-                  changeLang.isDark
-                      ? AppColors.darkBlue
-                      : AppColors.white, // 👈 This is the key
+              surface: changeLang.isDark ? AppColors.darkBlue : AppColors.white,
             ),
           ),
           child: child!,
@@ -71,10 +118,7 @@ class _NewEventState extends State<NewEvent> {
               primary: AppColors.primaryColor,
               onPrimary: AppColors.white,
               onSurface: changeLang.isDark ? AppColors.white : AppColors.black,
-              surface:
-                  changeLang.isDark
-                      ? AppColors.darkBlue
-                      : AppColors.white,
+              surface: changeLang.isDark ? AppColors.darkBlue : AppColors.white,
             ),
           ),
           child: child!,
@@ -88,13 +132,63 @@ class _NewEventState extends State<NewEvent> {
     }
   }
 
+  Widget dateTimeWidgets({
+    required IconData icon,
+    required String textTitle,
+    required String textChoose,
+    required void Function() onPressed,
+  }) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          color: changeLang.isDark ? AppColors.white : AppColors.black,
+        ),
+        SizedBox(width: width * 0.02),
+        Text(
+          textTitle,
+          style: TextStyle(
+            color: changeLang.isDark ? AppColors.white : AppColors.black,
+          ),
+        ),
+        const Spacer(),
+        TextButton(
+          onPressed: () {
+            onPressed();
+          },
+          child: Text(
+            textChoose,
+            style: TextStyle(
+              color: AppColors.primaryColor,
+              fontWeight: FontWeight.w500,
+              fontSize: 16,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  AppBar myAppBar() {
+    return AppBar(
+      iconTheme: IconThemeData(color: AppColors.primaryColor),
+      title: Text(
+        widget.title ?? AppLocalizations.of(context)!.create_event,
+        style: TextStyle(
+          color: AppColors.primaryColor,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      centerTitle: true,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    eventListProvider = Provider.of<EventListProvider>(context);
-    double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
+    height = MediaQuery.of(context).size.height;
+    width = MediaQuery.of(context).size.width;
     changeLang = Provider.of<ChangeLang>(context);
-    tabBarItems = [
+    eventTypes = [
       AppLocalizations.of(context)!.sport,
       AppLocalizations.of(context)!.birthDay,
       AppLocalizations.of(context)!.meeting,
@@ -105,30 +199,8 @@ class _NewEventState extends State<NewEvent> {
       AppLocalizations.of(context)!.holiday,
       AppLocalizations.of(context)!.eating,
     ];
-    images = [
-      'assets/img/sport.png',
-      'assets/img/Birthday2.png',
-      'assets/img/meeting.png',
-      'assets/img/gaming.png',
-      'assets/img/workshop.png',
-      'assets/img/book club.png',
-      'assets/img/exhibtation.png',
-      'assets/img/holiday.png',
-      'assets/img/eating.png',
-    ];
-
     return Scaffold(
-      appBar: AppBar(
-        iconTheme: IconThemeData(color: AppColors.primaryColor),
-        title: Text(
-          AppLocalizations.of(context)!.create_event,
-          style: TextStyle(
-            color: AppColors.primaryColor,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        centerTitle: true,
-      ),
+      appBar: myAppBar(),
 
       body: Padding(
         padding: EdgeInsets.symmetric(
@@ -150,7 +222,7 @@ class _NewEventState extends State<NewEvent> {
               ),
               SizedBox(height: height * 0.02),
               DefaultTabController(
-                length: tabBarItems.length,
+                length: eventTypes.length,
                 initialIndex: selectedIndex,
                 child: TabBar(
                   dividerHeight: 0,
@@ -166,11 +238,10 @@ class _NewEventState extends State<NewEvent> {
                     });
                   },
                   tabs:
-                      tabBarItems.map((item) {
+                      eventTypes.map((item) {
                         return TabBarItem(
                           txt: item,
-                          isSelected:
-                              selectedIndex == tabBarItems.indexOf(item),
+                          isSelected: selectedIndex == eventTypes.indexOf(item),
                           selectedColor:
                               changeLang.isDark
                                   ? AppColors.darkBlue
@@ -208,6 +279,8 @@ class _NewEventState extends State<NewEvent> {
                       labelColor: AppColors.gray,
                       keyboardType: TextInputType.text,
                       prefixIcon: Icons.edit_note,
+                      prefixIconColor:
+                          changeLang.isDark ? AppColors.white : AppColors.black,
                       validator: titleValidator,
                       inputColor:
                           changeLang.isDark ? AppColors.white : AppColors.black,
@@ -234,85 +307,35 @@ class _NewEventState extends State<NewEvent> {
                           changeLang.isDark ? AppColors.white : AppColors.black,
                     ),
                     SizedBox(height: height * 0.02),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.calendar_month_outlined,
-                          color:
-                              changeLang.isDark
-                                  ? AppColors.white
-                                  : AppColors.black,
-                        ),
-                        SizedBox(width: width * 0.02),
-                        Text(
-                          AppLocalizations.of(context)!.event_date,
-                          style: TextStyle(
-                            color:
-                                changeLang.isDark
-                                    ? AppColors.white
-                                    : AppColors.black,
-                          ),
-                        ),
-                        const Spacer(),
-                        TextButton(
-                          onPressed: () {
-                            _pickDate(context);
-                          },
-                          child: Text(
-                            selectedDate == null
-                                ? AppLocalizations.of(context)!.choose_date
-                                : "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}",
-                            style: TextStyle(
-                              color: AppColors.primaryColor,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                      ],
+                    dateTimeWidgets(
+                      icon: Icons.calendar_month_outlined,
+                      textChoose:
+                          selectedDate == null
+                              ? AppLocalizations.of(context)!.choose_date
+                              : "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}",
+                      textTitle: AppLocalizations.of(context)!.event_date,
+                      onPressed: () {
+                        _pickDate(context);
+                      },
                     ),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.access_time,
-                          color:
-                              changeLang.isDark
-                                  ? AppColors.white
-                                  : AppColors.black,
-                        ),
-                        SizedBox(width: width * 0.02),
-                        Text(
-                          AppLocalizations.of(context)!.event_time,
-                          style: TextStyle(
-                            color:
-                                changeLang.isDark
-                                    ? AppColors.white
-                                    : AppColors.black,
-                          ),
-                        ),
-                        const Spacer(),
-                        TextButton(
-                          onPressed: () {
-                            _pickTime(context);
-                          },
-                          child: Text(
-                            selectedTime == null
-                                ? AppLocalizations.of(context)!.choose_time
-                                : selectedTime!.format(context),
-                            style: TextStyle(
-                              color: AppColors.primaryColor,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                      ],
+                    dateTimeWidgets(
+                      icon: Icons.access_time,
+                      textChoose:
+                          selectedTime == null
+                              ? AppLocalizations.of(context)!.choose_time
+                              : selectedTime!.format(context),
+                      textTitle: AppLocalizations.of(context)!.event_time,
+                      onPressed: () {
+                        _pickTime(context);
+                      },
                     ),
                   ],
                 ),
               ),
               CustomButton(
-                text: AppLocalizations.of(context)!.add_event,
+                text:
+                    widget.buttonText ??
+                    AppLocalizations.of(context)!.add_event,
                 onPressed: addEvent,
               ),
             ],
@@ -323,25 +346,41 @@ class _NewEventState extends State<NewEvent> {
   }
 
   void addEvent() {
-    _formKey.currentState!.validate();
-    Event event = Event(
-      image: images[selectedIndex],
-      title: eventNameController.text,
-      description: eventDescController.text,
-      eventName: tabBarItems[selectedIndex],
-      dateTime: selectedDate!,
-      time: "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}",
-    );
-    FirebaseUtils.addEvent(event).timeout(Duration(milliseconds: 500),onTimeout: () {
-      if (kDebugMode) {
-        print("data added successfully");
+    if (_formKey.currentState!.validate() &&
+        selectedTime != null &&
+        selectedDate != null) {
+      if (widget.event == null) {
+        Event event = Event(
+          image: images[selectedIndex],
+          title: eventNameController.text,
+          description: eventDescController.text,
+          eventName: eventTypes[selectedIndex],
+          dateTime: selectedDate!,
+          time: "${selectedTime!.hour}:${selectedTime!.minute}",
+          // "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}",
+        );
+        FirebaseUtils.addEvent(event).timeout(
+          Duration(milliseconds: 500),
+          onTimeout: () {
+            if (kDebugMode) {
+              print("data added successfully");
+            }
+          },
+        );
+      } else {
+        widget.event?.image = images[selectedIndex];
+        widget.event?.title = eventNameController.text;
+        widget.event?.description = eventDescController.text;
+        widget.event?.eventName = eventTypes[selectedIndex];
+        widget.event?.dateTime = selectedDate!;
+        widget.event?.time = "${selectedTime!.hour}:${selectedTime!.minute}";
+        eventListProvider.editEvent(widget.event!);
+        Navigator.pop(context);
       }
-    },);
 
-    eventListProvider.setFalse();
-    eventListProvider.getAllEvent();
-
-    Navigator.pop(context);
+      eventListProvider.setFalse();
+      Navigator.pushNamed(context, RouteNames.homeScreen);
+    }
   }
 
   String? titleValidator(String? txt) {

@@ -19,6 +19,7 @@ class EventListProvider extends ChangeNotifier {
 
   void setFalse(){
     _hasFetchedEvents = false;
+    notifyListeners();
   }
 
   void getAllEvent() async {
@@ -54,32 +55,58 @@ class EventListProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+
+  void editEvent(Event event) async {
+    FirebaseUtils.getEventCollection()
+        .doc(event.id)
+        .update({
+      "image": event.image,
+      "title": event.title,
+      "description": event.description,
+      "eventName": event.eventName,
+      "dateTime": event.dateTime.millisecondsSinceEpoch,
+      "time": event.time,
+    })
+        .timeout(
+      const Duration(milliseconds: 500),
+      onTimeout: () {
+        print("Data updated successfully");
+      },
+    );
+    _hasFetchedEvents = false;
+    getAllEvent();
+    _hasFetchedEvents = false;
+    notifyListeners();
+  }
+
+
   Future<void> _getAllEvents() async {
     QuerySnapshot<Event> querySnapshot =
-    await FirebaseUtils.getEventCollection().get();
+    await FirebaseUtils.getEventCollection()
+        .orderBy('dateTime')
+        .get();
     _eventList = querySnapshot.docs.map((e) => e.data()).toList();
-    _eventList.sort((a, b) => a.dateTime.compareTo(b.dateTime));
   }
 
   Future<void> _getFavItem() async {
     QuerySnapshot<Event> querySnapshot =
-    await FirebaseUtils.getEventCollection().get();
+    await FirebaseUtils.getEventCollection().orderBy('dateTime')
+        .get();
     _favEventList = querySnapshot.docs
         .where((element) => element.data().isFavourite)
         .map((e) => e.data())
         .toList();
-    _favEventList.sort((a, b) => a.dateTime.compareTo(b.dateTime));
   }
 
   Future<void> _getFilteredEvents() async {
     QuerySnapshot<Event> querySnapshot =
-    await FirebaseUtils.getEventCollection().get();
+    await FirebaseUtils.getEventCollection().orderBy('dateTime')
+        .get();
     _eventList = querySnapshot.docs
         .where((element) =>
     element.data().eventName == _eventTypesList[_selectedIndex])
         .map((e) => e.data())
         .toList();
-    _eventList.sort((a, b) => a.dateTime.compareTo(b.dateTime));
   }
 
   List<String> initEventTypesList(BuildContext context) {
