@@ -1,11 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:evently/core/colors/app_colors.dart';
 import 'package:evently/core/providers/change_lang.dart';
 import 'package:evently/core/routes/route_names.dart';
 import 'package:evently/screens/home%20screen/pages/favourite_page.dart';
 import 'package:evently/screens/home%20screen/pages/home_page.dart';
 import 'package:evently/screens/home%20screen/pages/map_page.dart';
-import 'package:evently/screens/new%20event/new_event.dart';
 import 'package:evently/screens/home%20screen/pages/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:evently/src/generated/i18n/app_localizations.dart';
@@ -102,9 +100,11 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Icon(icon, color: isSelected ? AppColors.white : Colors.white70),
             isSelected
-                ? Text(
-                  label,
-                  style: TextStyle(color: AppColors.white, fontSize: 12),
+                ? Expanded(
+                  child: Text(
+                    label,
+                    style: TextStyle(color: AppColors.white, fontSize: 12),
+                  ),
                 )
                 : SizedBox(),
           ],

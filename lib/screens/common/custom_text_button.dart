@@ -19,9 +19,9 @@ class CustomTextButton extends StatelessWidget {
         txt,
         style: TextStyle(
           color: AppColors.primaryColor,
-          fontSize: 16,
+          fontSize: 14,
           fontWeight: FontWeight.w500,
-          decoration: TextDecoration.underline,
+          decoration: TextDecoration.none,
           fontStyle: FontStyle.italic,
         ),
       ),

@@ -354,7 +354,7 @@ class _NewEventState extends State<NewEvent> {
           image: images[selectedIndex],
           title: eventNameController.text,
           description: eventDescController.text,
-          eventName: eventTypes[selectedIndex],
+          eventName: eventListProvider.getEventTypesList[selectedIndex + 1],
           dateTime: selectedDate!,
           time: "${selectedTime!.hour}:${selectedTime!.minute}",
           // "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}",
@@ -371,7 +371,7 @@ class _NewEventState extends State<NewEvent> {
         widget.event?.image = images[selectedIndex];
         widget.event?.title = eventNameController.text;
         widget.event?.description = eventDescController.text;
-        widget.event?.eventName = eventTypes[selectedIndex];
+        widget.event?.eventName = eventListProvider.getEventTypesList[selectedIndex + 1];
         widget.event?.dateTime = selectedDate!;
         widget.event?.time = "${selectedTime!.hour}:${selectedTime!.minute}";
         eventListProvider.editEvent(widget.event!);

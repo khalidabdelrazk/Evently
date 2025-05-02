@@ -34,13 +34,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late EventListProvider eventListProvider;
+  late List<String> eventTypes;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     eventListProvider = Provider.of<EventListProvider>(context);
     if (eventListProvider.getEventTypesList.isEmpty) {
-      eventListProvider.initEventTypesList(context);
+      eventListProvider.initEventTypesList();
     }
     // Fetch events if the list is empty
     if (!eventListProvider.hasFetchedEvents) {
@@ -52,10 +53,22 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     var langProvider = Provider.of<ChangeLang>(context);
     double height = MediaQuery.of(context).size.height;
+    eventTypes = [
+      AppLocalizations.of(context)!.all,
+      AppLocalizations.of(context)!.sport,
+      AppLocalizations.of(context)!.birthDay,
+      AppLocalizations.of(context)!.meeting,
+      AppLocalizations.of(context)!.gaming,
+      AppLocalizations.of(context)!.workshop,
+      AppLocalizations.of(context)!.book_club,
+      AppLocalizations.of(context)!.exhibition,
+      AppLocalizations.of(context)!.holiday,
+      AppLocalizations.of(context)!.eating,
+    ];
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(height * 0.17),
+        preferredSize: Size.fromHeight(height * 0.25),
         child: _buildAppBar(context, langProvider),
       ),
       body: Padding(
@@ -121,7 +134,7 @@ class _HomePageState extends State<HomePage> {
   Widget _buildAppBar(BuildContext context, ChangeLang langProvider) {
     double height = MediaQuery.of(context).size.height;
     return Container(
-      height: height,
+      // height: height,
       padding: EdgeInsets.symmetric(horizontal: 15),
       decoration: BoxDecoration(
         color:
@@ -163,7 +176,7 @@ class _HomePageState extends State<HomePage> {
   // Method to build TabBar
   Widget _buildTabBar() {
     return DefaultTabController(
-      length: eventListProvider.getEventTypesList.length,
+      length: eventTypes.length,
       initialIndex: eventListProvider.getSelectedIndex,
       child: TabBar(
         dividerHeight: 0,
@@ -178,12 +191,12 @@ class _HomePageState extends State<HomePage> {
           eventListProvider.getAllEvent();
         },
         tabs:
-            eventListProvider.getEventTypesList.map((item) {
+            eventTypes.map((item) {
               return TabBarItem(
                 txt: item,
                 isSelected:
                     eventListProvider.getSelectedIndex ==
-                    eventListProvider.getEventTypesList.indexOf(item),
+                        eventTypes.indexOf(item),
               );
             }).toList(),
       ),

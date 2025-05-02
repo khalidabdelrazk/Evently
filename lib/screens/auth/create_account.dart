@@ -3,12 +3,14 @@ import 'package:evently/screens/common/custom_button.dart';
 import 'package:evently/screens/common/custom_text_button.dart';
 import 'package:evently/screens/common/custom_text_field.dart';
 import 'package:evently/screens/common/toggle_animated_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:evently/src/generated/i18n/app_localizations.dart';
 
 import '../../core/providers/change_lang.dart';
 import '../../core/routes/route_names.dart';
+import '../common/show_dialog_utils.dart';
 
 class CreateAccount extends StatefulWidget {
   const CreateAccount({super.key});
@@ -18,10 +20,10 @@ class CreateAccount extends StatefulWidget {
 }
 
 class _CreateAccountState extends State<CreateAccount> {
-  final _emailController = TextEditingController();
-  final _nameController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _rePasswordController = TextEditingController();
+  final _emailController = TextEditingController(text: 'khalid1@gmail.com');
+  final _nameController = TextEditingController(text: 'khalid');
+  final _passwordController = TextEditingController(text: '11111111');
+  final _rePasswordController = TextEditingController(text: '11111111');
   final _formKey = GlobalKey<FormState>();
   bool hidePassword = true;
 
@@ -174,8 +176,7 @@ class _CreateAccountState extends State<CreateAccount> {
               CustomButton(
                 text: AppLocalizations.of(context)!.create_account,
                 onPressed: () {
-                  // Todo: Login validation
-                  _formKey.currentState!.validate();
+                  createAccountValidator();
                 },
               ),
               Row(
@@ -212,5 +213,56 @@ class _CreateAccountState extends State<CreateAccount> {
         ),
       ),
     );
+  }
+
+  Future<void> createAccountValidator() async {
+    ShowDialogUtils.showLoading(context: context);
+    if (_formKey.currentState!.validate()) {
+      try {
+        final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text,
+          password: _passwordController.text,
+        );
+        ShowDialogUtils.hideLoading(context: context);
+        ShowDialogUtils.showMessage(
+            context: context,
+            title: 'Success',
+            message: 'Account Created Successfully',
+            posActionName: 'Ok',
+            posActionFunc: (){
+              Navigator.pushReplacementNamed(context, RouteNames.homeScreen);
+            }
+        );
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'weak-password') {
+          ShowDialogUtils.hideLoading(context: context);
+          ShowDialogUtils.showMessage(
+              context: context,
+              title: 'Error',
+              message: 'The password provided is too weak.',
+              posActionName: 'Ok',
+          );
+          print('The password provided is too weak.');
+        } else if (e.code == 'email-already-in-use') {
+          ShowDialogUtils.hideLoading(context: context);
+          ShowDialogUtils.showMessage(
+            context: context,
+            title: 'Error',
+            message: 'The account already exists for that email.',
+            posActionName: 'Ok',
+          );
+          print('The account already exists for that email.');
+        }
+      } catch (e) {
+        ShowDialogUtils.hideLoading(context: context);
+        ShowDialogUtils.showMessage(
+          context: context,
+          title: 'Error',
+          message: e.toString(),
+          posActionName: 'Ok',
+        );
+        print(e);
+      }
+    }
   }
 }

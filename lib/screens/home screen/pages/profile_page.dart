@@ -61,14 +61,16 @@ class ProfilePage extends StatelessWidget {
                     children: [
                       HomePage.customText(
                         text: AppLocalizations.of(context)!.john,
-                        fontSize: 24,
+                        fontSize: 20,
                         fontWeight: FontWeight.w700,
                       ),
                       SizedBox(height: height * 0.008),
-                      HomePage.customText(
-                        text: 'johnsafwat.route@gmail.com',
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
+                      Expanded(
+                        child: HomePage.customText(
+                          text: 'johnsafwat.route@gmail.com',
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ],
                   ),

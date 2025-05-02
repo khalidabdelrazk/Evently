@@ -17,7 +17,7 @@ class EventListProvider extends ChangeNotifier {
   int get getSelectedIndex => _selectedIndex;
   bool get hasFetchedEvents => _hasFetchedEvents;
 
-  void setFalse(){
+  void setFalse() {
     _hasFetchedEvents = false;
     notifyListeners();
   }
@@ -43,11 +43,11 @@ class EventListProvider extends ChangeNotifier {
         .doc(event.id)
         .update({"isFavourite": !event.isFavourite})
         .timeout(
-      const Duration(milliseconds: 500),
-      onTimeout: () {
-        print("Data updated successfully");
-      },
-    );
+          const Duration(milliseconds: 500),
+          onTimeout: () {
+            print("Data updated successfully");
+          },
+        );
     _hasFetchedEvents = false;
     getAllEvent();
     await _getFavItem();
@@ -55,72 +55,70 @@ class EventListProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
   void editEvent(Event event) async {
     FirebaseUtils.getEventCollection()
         .doc(event.id)
         .update({
-      "image": event.image,
-      "title": event.title,
-      "description": event.description,
-      "eventName": event.eventName,
-      "dateTime": event.dateTime.millisecondsSinceEpoch,
-      "time": event.time,
-    })
+          "image": event.image,
+          "title": event.title,
+          "description": event.description,
+          "eventName": event.eventName,
+          "dateTime": event.dateTime.millisecondsSinceEpoch,
+          "time": event.time,
+        })
         .timeout(
-      const Duration(milliseconds: 500),
-      onTimeout: () {
-        print("Data updated successfully");
-      },
-    );
+          const Duration(milliseconds: 500),
+          onTimeout: () {
+            print("Data updated successfully");
+          },
+        );
     _hasFetchedEvents = false;
     getAllEvent();
     _hasFetchedEvents = false;
     notifyListeners();
   }
 
-
   Future<void> _getAllEvents() async {
     QuerySnapshot<Event> querySnapshot =
-    await FirebaseUtils.getEventCollection()
-        .orderBy('dateTime')
-        .get();
+        await FirebaseUtils.getEventCollection().orderBy('dateTime').get();
     _eventList = querySnapshot.docs.map((e) => e.data()).toList();
   }
 
   Future<void> _getFavItem() async {
     QuerySnapshot<Event> querySnapshot =
-    await FirebaseUtils.getEventCollection().orderBy('dateTime')
-        .get();
-    _favEventList = querySnapshot.docs
-        .where((element) => element.data().isFavourite)
-        .map((e) => e.data())
-        .toList();
+        await FirebaseUtils.getEventCollection().orderBy('dateTime').get();
+    _favEventList =
+        querySnapshot.docs
+            .where((element) => element.data().isFavourite)
+            .map((e) => e.data())
+            .toList();
   }
 
   Future<void> _getFilteredEvents() async {
     QuerySnapshot<Event> querySnapshot =
-    await FirebaseUtils.getEventCollection().orderBy('dateTime')
-        .get();
-    _eventList = querySnapshot.docs
-        .where((element) =>
-    element.data().eventName == _eventTypesList[_selectedIndex])
-        .map((e) => e.data())
-        .toList();
+        await FirebaseUtils.getEventCollection().orderBy('dateTime').get();
+    _eventList =
+        querySnapshot.docs
+            .where(
+              (element) =>
+                  element.data().eventName == _eventTypesList[_selectedIndex],
+            )
+            .map((e) => e.data())
+            .toList();
   }
 
-  List<String> initEventTypesList(BuildContext context) {
+  List<String> initEventTypesList() {
     return _eventTypesList = [
-      AppLocalizations.of(context)!.all,
-      AppLocalizations.of(context)!.sport,
-      AppLocalizations.of(context)!.birthDay,
-      AppLocalizations.of(context)!.meeting,
-      AppLocalizations.of(context)!.gaming,
-      AppLocalizations.of(context)!.workshop,
-      AppLocalizations.of(context)!.book_club,
-      AppLocalizations.of(context)!.exhibition,
-      AppLocalizations.of(context)!.holiday,
-      AppLocalizations.of(context)!.eating,
+      'All',
+      'Sport',
+      'BirthDay',
+      'Meeting',
+      'Gaming',
+      'Workshop',
+      'Book Club',
+      'Exhibition',
+      'Holiday',
+      'Eating',
     ];
   }
 

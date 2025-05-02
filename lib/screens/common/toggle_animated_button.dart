@@ -25,13 +25,15 @@ class ToggleAnimatedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
     Provider.of<ChangeLang>(context);
     return AnimatedToggleSwitch<bool>.dual(
       current: currentState,
       first: true,
       second: false,
-      spacing: 5,
-      height: 50,
+      spacing: 22,
+      height: height*0.07,
       style: ToggleStyle(
         borderColor: AppColors.darkWhite,
         borderRadius: BorderRadius.circular(30),

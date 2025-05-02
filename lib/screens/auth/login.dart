@@ -2,7 +2,9 @@ import 'package:evently/core/colors/app_colors.dart';
 import 'package:evently/screens/common/custom_button.dart';
 import 'package:evently/screens/common/custom_text_button.dart';
 import 'package:evently/screens/common/custom_text_field.dart';
+import 'package:evently/screens/common/show_dialog_utils.dart';
 import 'package:evently/screens/common/toggle_animated_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:provider/provider.dart';
@@ -19,8 +21,8 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _emailController = TextEditingController(text: 'khalid1@gmail.com');
+  final _passwordController = TextEditingController(text: '11111111');
   final _formKey = GlobalKey<FormState>();
   bool hidePassword = true;
 
@@ -37,10 +39,48 @@ class _LoginState extends State<Login> {
   String? passwordValidator(String? txt) {
     if (txt == null) {
       return AppLocalizations.of(context)!.empty_field;
-    } else if (txt.length < 8) {
+    } else if (txt.length < 6) {
       return AppLocalizations.of(context)!.passwordShouldBe;
     }
     return null;
+  }
+
+  Future<void> loginValidator() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        ShowDialogUtils.showLoading(context: context);
+        final credential = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(
+              email: _emailController.text,
+              password: _passwordController.text,
+            );
+        ShowDialogUtils.showMessage(
+          context: context,
+          title: 'Success',
+          message: 'Login Successfully',
+          posActionName: 'Ok',
+          posActionFunc: () {
+            Navigator.pushReplacementNamed(context, RouteNames.homeScreen);
+          },
+        );
+      } on FirebaseAuthException catch (e) {
+        ShowDialogUtils.hideLoading(context: context);
+        ShowDialogUtils.showMessage(
+          context: context,
+          title: 'Error',
+          message:
+              '${AppLocalizations.of(context)!.invalidEmailAddress} ${AppLocalizations.of(context)!.or} ${AppLocalizations.of(context)!.password}',
+          posActionName: 'Ok',
+        );
+      } catch (e) {
+        ShowDialogUtils.showMessage(
+          context: context,
+          title: 'Error',
+          message: '$e',
+          posActionName: 'Ok',
+        );
+      }
+    }
   }
 
   @override
@@ -124,26 +164,30 @@ class _LoginState extends State<Login> {
                 CustomButton(
                   text: AppLocalizations.of(context)!.login,
                   onPressed: () {
-                    // Todo: Login validation
-                    _formKey.currentState!.validate();
+                    loginValidator();
                   },
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      AppLocalizations.of(context)!.doNotHaveAccount,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color:
-                            changeLang.isDark
-                                ? AppColors.white
-                                : AppColors.black,
+                    Expanded(
+                      child: Text(
+                        AppLocalizations.of(context)!.doNotHaveAccount,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color:
+                              changeLang.isDark
+                                  ? AppColors.white
+                                  : AppColors.black,
+                        ),
                       ),
                     ),
-                    CustomTextButton(txt: AppLocalizations.of(context)!.create_account,onPressed: () {
-                      Navigator.pushNamed(context, RouteNames.createAccount);
-                    },),
+                    CustomTextButton(
+                      txt: AppLocalizations.of(context)!.create_account,
+                      onPressed: () {
+                        Navigator.pushNamed(context, RouteNames.createAccount);
+                      },
+                    ),
                   ],
                 ),
                 SizedBox(height: height * 0.02),

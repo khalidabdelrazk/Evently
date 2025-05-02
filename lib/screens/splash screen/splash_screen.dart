@@ -34,7 +34,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (mounted) {
       Navigator.pushReplacementNamed(
         context,
-        onboardingDone ? RouteNames.homeScreen : RouteNames.pickTheme,
+        onboardingDone ? RouteNames.login : RouteNames.pickTheme,
       );
       // pref.setBool("onboarding_done", true);
     }
