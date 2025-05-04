@@ -2,7 +2,10 @@ import 'package:evently/core/colors/app_colors.dart';
 import 'package:evently/core/routes/route_names.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../core/providers/my_user.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,6 +16,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   late SharedPreferences pref;
+  late MyUserProvider myUserProvider;
 
   @override
   void initState() {
@@ -34,7 +38,11 @@ class _SplashScreenState extends State<SplashScreen> {
     if (mounted) {
       Navigator.pushReplacementNamed(
         context,
-        onboardingDone ? RouteNames.login : RouteNames.pickTheme,
+        onboardingDone
+            ? myUserProvider.login
+                ? RouteNames.homeScreen
+                : RouteNames.login
+            : RouteNames.pickTheme,
       );
       // pref.setBool("onboarding_done", true);
     }
@@ -42,6 +50,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    myUserProvider = Provider.of<MyUserProvider>(context);
     return Scaffold(
       backgroundColor: AppColors.white,
       body: Column(

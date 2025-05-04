@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     var langProvider = Provider.of<ChangeLang>(context);
     return Scaffold(
-      body: pages[currentIndex],
+      body: SafeArea(child: pages[currentIndex]),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () {

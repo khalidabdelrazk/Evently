@@ -1,5 +1,12 @@
+import 'package:evently/core/model/my_user.dart';
+import 'package:evently/core/providers/event_list_provider.dart';
+import 'package:evently/core/providers/my_user.dart';
+import 'package:evently/core/routes/route_names.dart';
+import 'package:evently/firebase/firebase_utils.dart';
 import 'package:evently/screens/common/custom_button.dart';
+import 'package:evently/screens/common/show_dialog_utils.dart';
 import 'package:evently/screens/home%20screen/pages/home_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,8 +22,13 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var langProvider = Provider.of<ChangeLang>(context);
+    var eventListProvider = Provider.of<EventListProvider>(context);
+    var myUserProvider = Provider.of<MyUserProvider>(context);
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+    if (myUserProvider.myUser == null) {
+      return Center(child: CircularProgressIndicator());
+    }
     return Scaffold(
       body: Column(
         children: [
@@ -41,13 +53,15 @@ class ProfilePage extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(1000),
-                      topRight: langProvider.isEnglish
-                          ? Radius.circular(1000)
-                          : Radius.circular(24),
+                      topRight:
+                          langProvider.isEnglish
+                              ? Radius.circular(1000)
+                              : Radius.circular(24),
                       bottomRight: Radius.circular(1000),
-                      topLeft: langProvider.isEnglish
-                          ? Radius.circular(24)
-                          : Radius.circular(1000),
+                      topLeft:
+                          langProvider.isEnglish
+                              ? Radius.circular(24)
+                              : Radius.circular(1000),
                     ),
                   ),
                   child: Image.asset("assets/img/pp.png"),
@@ -60,14 +74,14 @@ class ProfilePage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       HomePage.customText(
-                        text: AppLocalizations.of(context)!.john,
+                        text: myUserProvider.myUser!.name,
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                       ),
                       SizedBox(height: height * 0.008),
                       Expanded(
                         child: HomePage.customText(
-                          text: 'johnsafwat.route@gmail.com',
+                          text: myUserProvider.myUser!.email,
                           fontSize: 18,
                           fontWeight: FontWeight.w500,
                         ),
@@ -80,73 +94,95 @@ class ProfilePage extends StatelessWidget {
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: width * 0.05),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(width: width, height: height * 0.02),
-                HomePage.customText(
-                  text: AppLocalizations.of(context)!.theme,
-                  color:
-                      langProvider.isDark ? AppColors.white : AppColors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
-                SizedBox(height: height * 0.01),
-                CustomButton(
-                  text:
-                      langProvider.isEnglish
-                          ? AppLocalizations.of(context)!.english
-                          : AppLocalizations.of(context)!.arabic,
-                  color: AppColors.primaryColor,
-                  borderRadius: 1,
-                  backgroundColor: Colors.transparent,
-                  prefixIcon: Icons.arrow_drop_down,
-                  onPressed: () {
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (context) {
-                        return ShowModalBottomSheet(
-                          text1: AppLocalizations.of(context)!.english ,
-                          text2: AppLocalizations.of(context)!.arabic,
-                          toggleLang: true,
-                        );
-                      },
-                    );
-                  },
-                ),
+            child: SizedBox(
+              height: height*0.6,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(width: width, height: height * 0.02),
+                  HomePage.customText(
+                    text: AppLocalizations.of(context)!.theme,
+                    color:
+                        langProvider.isDark ? AppColors.white : AppColors.black,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  SizedBox(height: height * 0.01),
+                  CustomButton(
+                    text:
+                        langProvider.isEnglish
+                            ? AppLocalizations.of(context)!.english
+                            : AppLocalizations.of(context)!.arabic,
+                    color: AppColors.primaryColor,
+                    borderRadius: 1,
+                    backgroundColor: Colors.transparent,
+                    prefixIcon: Icons.arrow_drop_down,
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return ShowModalBottomSheet(
+                            text1: AppLocalizations.of(context)!.english,
+                            text2: AppLocalizations.of(context)!.arabic,
+                            toggleLang: true,
+                          );
+                        },
+                      );
+                    },
+                  ),
 
-                SizedBox(height: height * 0.01),
-                HomePage.customText(
-                  text: AppLocalizations.of(context)!.theme,
-                  color:
-                  langProvider.isDark ? AppColors.white : AppColors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
-                SizedBox(height: height * 0.01),
-                CustomButton(
-                  text:
-                  langProvider.isDark
-                      ? AppLocalizations.of(context)!.dark
-                      : AppLocalizations.of(context)!.light,
-                  color: AppColors.primaryColor,
-                  borderRadius: 1,
-                  backgroundColor: Colors.transparent,
-                  prefixIcon: Icons.arrow_drop_down,
-                  onPressed: () {
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (context) {
-                        return ShowModalBottomSheet(
-                          text1: AppLocalizations.of(context)!.light,
-                          text2: AppLocalizations.of(context)!.dark,
-                          toggleLang: false,
-                        );
-                      },
-                    );
-                  },
-                ),
-              ],
+                  SizedBox(height: height * 0.01),
+                  HomePage.customText(
+                    text: AppLocalizations.of(context)!.theme,
+                    color:
+                        langProvider.isDark ? AppColors.white : AppColors.black,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  SizedBox(height: height * 0.01),
+                  CustomButton(
+                    text:
+                        langProvider.isDark
+                            ? AppLocalizations.of(context)!.dark
+                            : AppLocalizations.of(context)!.light,
+                    color: AppColors.primaryColor,
+                    borderRadius: 1,
+                    backgroundColor: Colors.transparent,
+                    prefixIcon: Icons.arrow_drop_down,
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return ShowModalBottomSheet(
+                            text1: AppLocalizations.of(context)!.light,
+                            text2: AppLocalizations.of(context)!.dark,
+                            toggleLang: false,
+                          );
+                        },
+                      );
+                    },
+                  ),
+                  const Spacer(),
+                  const Spacer(),
+                  const Spacer(),
+                  const Spacer(),
+                  const Spacer(),
+                  const Spacer(),
+                  const Spacer(),
+                  CustomButton(
+                    text: AppLocalizations.of(context)!.logout,
+                    backgroundColor: Colors.redAccent,
+                    onPressed: () async{
+                      ShowDialogUtils.showLoading(context: context);
+                      await FirebaseAuth.instance.signOut();
+                      eventListProvider.deleteAllEvents(myUserProvider.myUser?.id?? '');
+                      myUserProvider.logout();
+                      Navigator.pushReplacementNamed(context, RouteNames.login);
+                    },
+                  ),
+                  const Spacer(),
+                ],
+              ),
             ),
           ),
         ],
@@ -154,37 +190,3 @@ class ProfilePage extends StatelessWidget {
     );
   }
 }
-
-/*
-SizedBox(
-                          height: height / 6,
-                          child: Column(
-                            children: [
-                              CustomButton(
-                                text: AppLocalizations.of(context)!.dark,
-                                color:
-                                    langProvider.isDark
-                                        ? AppColors.white
-                                        : AppColors.black,
-                                backgroundColor: Colors.transparent,
-                                onPressed: () {
-                                  langProvider.toggleTheme();
-                                  Navigator.pop(context);
-                                },
-                              ),
-                              CustomButton(
-                                text: AppLocalizations.of(context)!.light,
-                                color:
-                                    langProvider.isDark
-                                        ? AppColors.white
-                                        : AppColors.black,
-                                backgroundColor: Colors.transparent,
-                                onPressed: () {
-                                  langProvider.toggleTheme();
-                                  Navigator.pop(context);
-                                },
-                              ),
-                            ],
-                          ),
-                        )
- */

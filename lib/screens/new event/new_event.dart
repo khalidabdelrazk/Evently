@@ -1,5 +1,6 @@
 import 'package:evently/core/model/event.dart';
 import 'package:evently/core/providers/change_lang.dart';
+import 'package:evently/core/providers/my_user.dart';
 import 'package:evently/core/routes/route_names.dart';
 import 'package:evently/firebase/firebase_utils.dart';
 import 'package:evently/screens/common/custom_button.dart';
@@ -16,7 +17,8 @@ class NewEvent extends StatefulWidget {
   final Event? event;
   final String? title;
   final String? buttonText;
-  const NewEvent({super.key, this.event, this.title, this.buttonText});
+  final List<Widget>? actions;
+  const NewEvent({super.key, this.event, this.title, this.buttonText, this.actions});
 
   @override
   State<NewEvent> createState() => _NewEventState();
@@ -31,6 +33,7 @@ class _NewEventState extends State<NewEvent> {
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
   late EventListProvider eventListProvider;
+  late MyUserProvider myUserProvider;
   late double height;
   late double width;
   late List<String> eventTypes;
@@ -138,6 +141,7 @@ class _NewEventState extends State<NewEvent> {
     required String textChoose,
     required void Function() onPressed,
   }) {
+    myUserProvider = Provider.of<MyUserProvider>(context);
     return Row(
       children: [
         Icon(
@@ -179,12 +183,14 @@ class _NewEventState extends State<NewEvent> {
           fontWeight: FontWeight.w500,
         ),
       ),
+      actions: widget.actions,
       centerTitle: true,
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    myUserProvider = Provider.of<MyUserProvider>(context);
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
     changeLang = Provider.of<ChangeLang>(context);
@@ -359,26 +365,24 @@ class _NewEventState extends State<NewEvent> {
           time: "${selectedTime!.hour}:${selectedTime!.minute}",
           // "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}",
         );
-        FirebaseUtils.addEvent(event).timeout(
-          Duration(milliseconds: 500),
-          onTimeout: () {
-            if (kDebugMode) {
-              print("data added successfully");
-            }
-          },
-        );
+        FirebaseUtils.addEvent(event, myUserProvider.myUser!.id).then((value) {
+          if (kDebugMode) {
+            print("data added successfully");
+          }
+        });
       } else {
         widget.event?.image = images[selectedIndex];
         widget.event?.title = eventNameController.text;
         widget.event?.description = eventDescController.text;
-        widget.event?.eventName = eventListProvider.getEventTypesList[selectedIndex + 1];
+        widget.event?.eventName =
+            eventListProvider.getEventTypesList[selectedIndex + 1];
         widget.event?.dateTime = selectedDate!;
         widget.event?.time = "${selectedTime!.hour}:${selectedTime!.minute}";
-        eventListProvider.editEvent(widget.event!);
+        eventListProvider.editEvent(widget.event!, myUserProvider.myUser!.id);
         Navigator.pop(context);
       }
 
-      eventListProvider.setFalse();
+      eventListProvider.setFetchFalse();
       Navigator.pushNamed(context, RouteNames.homeScreen);
     }
   }

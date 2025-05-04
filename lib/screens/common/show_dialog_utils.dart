@@ -4,6 +4,7 @@ class ShowDialogUtils {
   static void showLoading({required BuildContext context}) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
           content: Row(

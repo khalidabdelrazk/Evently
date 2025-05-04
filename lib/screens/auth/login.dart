@@ -1,4 +1,5 @@
 import 'package:evently/core/colors/app_colors.dart';
+import 'package:evently/firebase/firebase_utils.dart';
 import 'package:evently/screens/common/custom_button.dart';
 import 'package:evently/screens/common/custom_text_button.dart';
 import 'package:evently/screens/common/custom_text_field.dart';
@@ -10,7 +11,9 @@ import 'package:icons_plus/icons_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:evently/src/generated/i18n/app_localizations.dart';
 
+import '../../core/model/my_user.dart';
 import '../../core/providers/change_lang.dart';
+import '../../core/providers/my_user.dart';
 import '../../core/routes/route_names.dart';
 
 class Login extends StatefulWidget {
@@ -54,6 +57,25 @@ class _LoginState extends State<Login> {
               email: _emailController.text,
               password: _passwordController.text,
             );
+        // todo : read user From FireStore
+        MyUser? myUser = await FirebaseUtils.readUserFromFirestore(credential.user?.uid ?? '');
+        if(myUser == null){
+          ShowDialogUtils.hideLoading(context: context);
+          ShowDialogUtils.showMessage(
+            context: context,
+            title: 'Error',
+            message:
+            'SomeThing happen Pls try again',
+            posActionName: 'Ok',
+          );
+          return ;
+        }
+        // todo : Save User Id
+        var userProvider = Provider.of<MyUserProvider>(context,listen: false);
+        userProvider.updateUser(myUser);
+        userProvider.setLoginStatus(true);
+        // todo : hide Loading and Show status Message
+        ShowDialogUtils.hideLoading(context: context);
         ShowDialogUtils.showMessage(
           context: context,
           title: 'Success',
@@ -63,7 +85,9 @@ class _LoginState extends State<Login> {
             Navigator.pushReplacementNamed(context, RouteNames.homeScreen);
           },
         );
-      } on FirebaseAuthException catch (e) {
+      } on FirebaseAuthException {
+
+        // todo : hide Loading and Show status Message
         ShowDialogUtils.hideLoading(context: context);
         ShowDialogUtils.showMessage(
           context: context,
@@ -73,6 +97,8 @@ class _LoginState extends State<Login> {
           posActionName: 'Ok',
         );
       } catch (e) {
+        // todo : hide Loading and Show status Message
+        ShowDialogUtils.hideLoading(context: context);
         ShowDialogUtils.showMessage(
           context: context,
           title: 'Error',

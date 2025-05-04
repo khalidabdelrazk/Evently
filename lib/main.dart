@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:evently/core/providers/change_lang.dart';
 import 'package:evently/core/providers/event_list_provider.dart';
+import 'package:evently/core/providers/my_user.dart';
 import 'package:evently/core/routes/route_names.dart';
 import 'package:evently/core/routes/routes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:evently/src/generated/i18n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,11 +20,12 @@ void main() async{
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await FirebaseFirestore.instance.disableNetwork();
+  // await FirebaseFirestore.instance.disableNetwork();
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => ChangeLang()),
       ChangeNotifierProvider(create: (context) => EventListProvider()),
+      ChangeNotifierProvider(create: (context) => MyUserProvider()),
     ],
       child: MyApp()
   ));

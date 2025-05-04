@@ -1,3 +1,4 @@
+import 'package:evently/core/providers/my_user.dart';
 import 'package:evently/screens/common/custom_text_field.dart';
 import 'package:evently/screens/home%20screen/common/event_item.dart';
 import 'package:flutter/material.dart';
@@ -15,12 +16,13 @@ class FavouritePage extends StatefulWidget {
 
 class _FavouritePageState extends State<FavouritePage> {
   final TextEditingController controller = TextEditingController();
+  late MyUserProvider myUserProvider = Provider.of<MyUserProvider>(context,listen: false);
 
   @override
   void initState() {
     super.initState();
-    // Fetch favorite events on page initialization
-    Provider.of<EventListProvider>(context, listen: false).getFavEvent();
+    // todo : Fetch favorite events on page initialization
+    Provider.of<EventListProvider>(context, listen: false).getFavEvent(myUserProvider.myUser!.id);
   }
 
   @override

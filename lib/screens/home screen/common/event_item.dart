@@ -1,4 +1,5 @@
 import 'package:evently/core/model/event.dart';
+import 'package:evently/core/providers/my_user.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +14,7 @@ class EventItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var userProvider = Provider.of<MyUserProvider>(context);
     var langProvider = Provider.of<ChangeLang>(context);
     var eventListProvider= Provider.of<EventListProvider>(context);
     double width = MediaQuery.of(context).size.width;
@@ -92,7 +94,7 @@ class EventItem extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () {
-                      eventListProvider.toggleFav(event);
+                      eventListProvider.toggleFav(event,userProvider.myUser!.id);
                     },
                     icon: Icon(event.isFavourite? Icons.favorite : Icons.favorite_border, color: AppColors.primaryColor),
                   ),

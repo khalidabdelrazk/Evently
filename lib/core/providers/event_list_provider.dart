@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../firebase/firebase_utils.dart';
 import '../model/event.dart';
-import 'package:evently/src/generated/i18n/app_localizations.dart';
 
 class EventListProvider extends ChangeNotifier {
   late List<Event> _eventList = [];
@@ -17,46 +16,49 @@ class EventListProvider extends ChangeNotifier {
   int get getSelectedIndex => _selectedIndex;
   bool get hasFetchedEvents => _hasFetchedEvents;
 
-  void setFalse() {
+  void setFetchFalse() {
     _hasFetchedEvents = false;
     notifyListeners();
   }
 
-  void getAllEvent() async {
+  void getAllEvent(String uId) async {
     if (_hasFetchedEvents) return;
-
-    _selectedIndex != 0 ? await _getFilteredEvents() : await _getAllEvents();
+    _selectedIndex != 0
+        ? await _getFilteredEvents(uId)
+        : await _getAllEvents(uId);
     _hasFetchedEvents = true;
     notifyListeners();
   }
 
-  void getFavEvent() async {
-    await _getFavItem();
+  void getFavEvent(String uId) async {
+    await _getFavItem(uId);
     if (_favEventList.isNotEmpty) {
       notifyListeners();
     }
     _hasFetchedEvents = false;
   }
 
-  void toggleFav(Event event) async {
-    FirebaseUtils.getEventCollection()
-        .doc(event.id)
-        .update({"isFavourite": !event.isFavourite})
-        .timeout(
-          const Duration(milliseconds: 500),
-          onTimeout: () {
-            print("Data updated successfully");
-          },
-        );
+  void toggleFav(Event event, String uId) async {
+    FirebaseUtils.getEventCollection(
+      uId,
+    ).doc(event.id).update({"isFavourite": !event.isFavourite}).then(
+      (value) {
+        print("Data updated successfully");
+      },
+      // const Duration(milliseconds: 500),
+      // onTimeout: () {
+      //   print("Data updated successfully");
+      // },
+    );
     _hasFetchedEvents = false;
-    getAllEvent();
-    await _getFavItem();
+    getAllEvent(uId);
+    await _getFavItem(uId);
     _hasFetchedEvents = false;
     notifyListeners();
   }
 
-  void editEvent(Event event) async {
-    FirebaseUtils.getEventCollection()
+  void editEvent(Event event, String uId) async {
+    FirebaseUtils.getEventCollection(uId)
         .doc(event.id)
         .update({
           "image": event.image,
@@ -66,27 +68,30 @@ class EventListProvider extends ChangeNotifier {
           "dateTime": event.dateTime.millisecondsSinceEpoch,
           "time": event.time,
         })
-        .timeout(
-          const Duration(milliseconds: 500),
-          onTimeout: () {
+        .then(
+          (value) {
             print("Data updated successfully");
           },
+          // const Duration(milliseconds: 500),
+          // onTimeout: () {
+          //   print("Data updated successfully");
+          // },
         );
     _hasFetchedEvents = false;
-    getAllEvent();
+    getAllEvent(uId);
     _hasFetchedEvents = false;
     notifyListeners();
   }
 
-  Future<void> _getAllEvents() async {
+  Future<void> _getAllEvents(String uId) async {
     QuerySnapshot<Event> querySnapshot =
-        await FirebaseUtils.getEventCollection().orderBy('dateTime').get();
+        await FirebaseUtils.getEventCollection(uId).orderBy('dateTime').get();
     _eventList = querySnapshot.docs.map((e) => e.data()).toList();
   }
 
-  Future<void> _getFavItem() async {
+  Future<void> _getFavItem(String uId) async {
     QuerySnapshot<Event> querySnapshot =
-        await FirebaseUtils.getEventCollection().orderBy('dateTime').get();
+        await FirebaseUtils.getEventCollection(uId).orderBy('dateTime').get();
     _favEventList =
         querySnapshot.docs
             .where((element) => element.data().isFavourite)
@@ -94,9 +99,9 @@ class EventListProvider extends ChangeNotifier {
             .toList();
   }
 
-  Future<void> _getFilteredEvents() async {
+  Future<void> _getFilteredEvents(String uId) async {
     QuerySnapshot<Event> querySnapshot =
-        await FirebaseUtils.getEventCollection().orderBy('dateTime').get();
+        await FirebaseUtils.getEventCollection(uId).orderBy('dateTime').get();
     _eventList =
         querySnapshot.docs
             .where(
@@ -128,14 +133,24 @@ class EventListProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteAllEvents() async {
-    final snapshot = await FirebaseUtils.getEventCollection().get();
-    for (var doc in snapshot.docs) {
-      await doc.reference.delete();
-    }
+  deleteEvent(Event event,String uId) async {
+    final snapshot = FirebaseUtils.getEventCollection(uId);
+    await snapshot.doc(event.id).delete();
+    _eventList.remove(event);
+    _favEventList.remove(event);
+    _getFavItem(uId);
+    _hasFetchedEvents = false;
+    notifyListeners();
+  }
+
+  void deleteAllEvents(String uId) async {
+    // final snapshot = await FirebaseUtils.getEventCollection(uId).get();
+    // for (var doc in snapshot.docs) {
+    //   await doc.reference.delete();
+    // }
     _eventList.clear();
     _favEventList.clear();
     _hasFetchedEvents = false;
-    notifyListeners();
+    // notifyListeners();
   }
 }

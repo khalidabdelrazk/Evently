@@ -220,4 +220,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get confirm => 'Confirm';
+
+  @override
+  String get logout => 'Logout';
+
+  @override
+  String get noEvent => 'No Added Events yet';
 }

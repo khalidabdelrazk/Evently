@@ -1,5 +1,4 @@
 import 'package:evently/core/providers/event_list_provider.dart';
-import 'package:evently/core/routes/route_names.dart';
 import 'package:evently/screens/home%20screen/common/event_item.dart';
 import 'package:evently/screens/new%20event/new_event.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../../../core/colors/app_colors.dart';
 import '../../../core/providers/change_lang.dart';
 import 'package:evently/src/generated/i18n/app_localizations.dart';
+import '../../../core/providers/my_user.dart';
 import '../../common/tabbar_item.dart';
 
 class HomePage extends StatefulWidget {
@@ -34,23 +34,26 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late EventListProvider eventListProvider;
+  late MyUserProvider userProvider;
   late List<String> eventTypes;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     eventListProvider = Provider.of<EventListProvider>(context);
+    userProvider = Provider.of<MyUserProvider>(context);
     if (eventListProvider.getEventTypesList.isEmpty) {
       eventListProvider.initEventTypesList();
     }
     // Fetch events if the list is empty
     if (!eventListProvider.hasFetchedEvents) {
-      eventListProvider.getAllEvent();
+      eventListProvider.getAllEvent(userProvider.myUser!.id);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    var myUserProvider = Provider.of<MyUserProvider>(context);
     var langProvider = Provider.of<ChangeLang>(context);
     double height = MediaQuery.of(context).size.height;
     eventTypes = [
@@ -68,7 +71,7 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(height * 0.25),
+        preferredSize: Size.fromHeight(height * 0.24),
         child: _buildAppBar(context, langProvider),
       ),
       body: Padding(
@@ -113,6 +116,21 @@ class _HomePageState extends State<HomePage> {
                                             AppLocalizations.of(
                                               context,
                                             )!.confirm,
+                                        actions: [
+
+                                            IconButton(
+                                              onPressed: () async{
+                                                await eventListProvider.deleteEvent(
+                                                  eventListProvider
+                                                      .getEventList[index],
+                                                  myUserProvider.myUser!.id,
+                                                );
+                                                Navigator.pop(context);
+                                              },
+                                              icon: Icon(Icons.delete),
+                                            ),
+
+                                        ],
                                       ),
                                 ),
                               );
@@ -144,31 +162,29 @@ class _HomePageState extends State<HomePage> {
           bottomRight: Radius.circular(30),
         ),
       ),
-      child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            HomePage.customText(text: AppLocalizations.of(context)!.welcome),
-            HomePage.customText(
-              text: AppLocalizations.of(context)!.john,
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
-            ),
-            SizedBox(height: height * 0.013),
-            Row(
-              children: [
-                Icon(Icons.location_on_outlined),
-                SizedBox(width: 5),
-                HomePage.customText(
-                  text: AppLocalizations.of(context)!.cairo,
-                  fontWeight: FontWeight.w700,
-                ),
-              ],
-            ),
-            SizedBox(height: height * 0.013),
-            _buildTabBar(),
-          ],
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          HomePage.customText(text: AppLocalizations.of(context)!.welcome),
+          HomePage.customText(
+            text: userProvider.myUser!.name,
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+          ),
+          SizedBox(height: height * 0.013),
+          Row(
+            children: [
+              Icon(Icons.location_on_outlined),
+              SizedBox(width: 5),
+              HomePage.customText(
+                text: AppLocalizations.of(context)!.cairo,
+                fontWeight: FontWeight.w700,
+              ),
+            ],
+          ),
+          SizedBox(height: height * 0.013),
+          _buildTabBar(),
+        ],
       ),
     );
   }
@@ -188,7 +204,7 @@ class _HomePageState extends State<HomePage> {
         indicatorColor: Colors.transparent,
         onTap: (value) {
           eventListProvider.changeSelectedIndex(value);
-          eventListProvider.getAllEvent();
+          eventListProvider.getAllEvent(userProvider.myUser!.id);
         },
         tabs:
             eventTypes.map((item) {
@@ -196,7 +212,7 @@ class _HomePageState extends State<HomePage> {
                 txt: item,
                 isSelected:
                     eventListProvider.getSelectedIndex ==
-                        eventTypes.indexOf(item),
+                    eventTypes.indexOf(item),
               );
             }).toList(),
       ),

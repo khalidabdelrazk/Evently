@@ -1,4 +1,6 @@
 import 'package:evently/core/colors/app_colors.dart';
+import 'package:evently/core/model/my_user.dart';
+import 'package:evently/firebase/firebase_utils.dart';
 import 'package:evently/screens/common/custom_button.dart';
 import 'package:evently/screens/common/custom_text_button.dart';
 import 'package:evently/screens/common/custom_text_field.dart';
@@ -9,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:evently/src/generated/i18n/app_localizations.dart';
 
 import '../../core/providers/change_lang.dart';
+import '../../core/providers/my_user.dart';
 import '../../core/routes/route_names.dart';
 import '../common/show_dialog_utils.dart';
 
@@ -65,12 +68,15 @@ class _CreateAccountState extends State<CreateAccount> {
       appBar: AppBar(
         centerTitle: true,
         iconTheme: IconThemeData(
-          color: changeLang.isDark ? AppColors.white : AppColors.black
+          color: changeLang.isDark ? AppColors.white : AppColors.black,
         ),
-        title: Text(AppLocalizations.of(context)!.register,style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context)!.register,
+          style: TextStyle(
             color: changeLang.isDark ? AppColors.white : AppColors.black,
-            fontWeight: FontWeight.w700
-        ),),
+            fontWeight: FontWeight.w700,
+          ),
+        ),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: width * 0.03),
@@ -96,9 +102,7 @@ class _CreateAccountState extends State<CreateAccount> {
                       keyboardType: TextInputType.text,
                       validator: nameValidator,
                       inputColor:
-                      changeLang.isDark
-                          ? AppColors.white
-                          : AppColors.black,
+                          changeLang.isDark ? AppColors.white : AppColors.black,
                     ),
                     SizedBox(height: height * 0.01),
                     CustomTextField(
@@ -111,9 +115,7 @@ class _CreateAccountState extends State<CreateAccount> {
                       keyboardType: TextInputType.emailAddress,
                       validator: emailValidator,
                       inputColor:
-                      changeLang.isDark
-                          ? AppColors.white
-                          : AppColors.black,
+                          changeLang.isDark ? AppColors.white : AppColors.black,
                     ),
                     SizedBox(height: height * 0.01),
                     CustomTextField(
@@ -129,13 +131,11 @@ class _CreateAccountState extends State<CreateAccount> {
                       // keyboardType: TextInputType.visiblePassword,
                       validator: passwordValidator,
                       inputColor:
-                      changeLang.isDark
-                          ? AppColors.white
-                          : AppColors.black,
+                          changeLang.isDark ? AppColors.white : AppColors.black,
                       suffixIcon:
-                      hidePassword
-                          ? Icons.visibility
-                          : Icons.visibility_off,
+                          hidePassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                       suffixIconColor: AppColors.gray,
                       onSuffixPressed: () {
                         hidePassword = !hidePassword;
@@ -156,13 +156,11 @@ class _CreateAccountState extends State<CreateAccount> {
                       // keyboardType: TextInputType.visiblePassword,
                       validator: passwordValidator,
                       inputColor:
-                      changeLang.isDark
-                          ? AppColors.white
-                          : AppColors.black,
+                          changeLang.isDark ? AppColors.white : AppColors.black,
                       suffixIcon:
-                      hidePassword
-                          ? Icons.visibility
-                          : Icons.visibility_off,
+                          hidePassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                       suffixIconColor: AppColors.gray,
                       onSuffixPressed: () {
                         hidePassword = !hidePassword;
@@ -187,14 +185,15 @@ class _CreateAccountState extends State<CreateAccount> {
                     style: TextStyle(
                       fontSize: 16,
                       color:
-                      changeLang.isDark
-                          ? AppColors.white
-                          : AppColors.black,
+                          changeLang.isDark ? AppColors.white : AppColors.black,
                     ),
                   ),
-                  CustomTextButton(txt: AppLocalizations.of(context)!.login,onPressed: () {
-                    Navigator.pushNamed(context, RouteNames.login);
-                  },),
+                  CustomTextButton(
+                    txt: AppLocalizations.of(context)!.login,
+                    onPressed: () {
+                      Navigator.pushNamed(context, RouteNames.login);
+                    },
+                  ),
                 ],
               ),
               SizedBox(height: height * 0.02),
@@ -219,31 +218,46 @@ class _CreateAccountState extends State<CreateAccount> {
     ShowDialogUtils.showLoading(context: context);
     if (_formKey.currentState!.validate()) {
       try {
-        final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        final credential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+              email: _emailController.text,
+              password: _passwordController.text,
+            );
+        // todo : save user to data base
+        MyUser myUser = MyUser(
+          id: credential.user?.uid ?? " ",
+          name: _nameController.text,
           email: _emailController.text,
-          password: _passwordController.text,
         );
+        await FirebaseUtils.addUser(myUser);
+        // todo : Save User Id
+        var userProvider = Provider.of<MyUserProvider>(context,listen: false);
+        userProvider.updateUser(myUser);
+        userProvider.setLoginStatus(true);
+
+        // todo : hide Loading and Show status Message
         ShowDialogUtils.hideLoading(context: context);
         ShowDialogUtils.showMessage(
-            context: context,
-            title: 'Success',
-            message: 'Account Created Successfully',
-            posActionName: 'Ok',
-            posActionFunc: (){
-              Navigator.pushReplacementNamed(context, RouteNames.homeScreen);
-            }
+          context: context,
+          title: 'Success',
+          message: 'Account Created Successfully',
+          posActionName: 'Ok',
+          posActionFunc: () {
+            Navigator.pushReplacementNamed(context, RouteNames.homeScreen);
+          },
         );
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
+          // todo : hide Loading and Show status Message
           ShowDialogUtils.hideLoading(context: context);
           ShowDialogUtils.showMessage(
-              context: context,
-              title: 'Error',
-              message: 'The password provided is too weak.',
-              posActionName: 'Ok',
+            context: context,
+            title: 'Error',
+            message: 'The password provided is too weak.',
+            posActionName: 'Ok',
           );
-          print('The password provided is too weak.');
         } else if (e.code == 'email-already-in-use') {
+          // todo : hide Loading and Show status Message
           ShowDialogUtils.hideLoading(context: context);
           ShowDialogUtils.showMessage(
             context: context,
@@ -251,9 +265,9 @@ class _CreateAccountState extends State<CreateAccount> {
             message: 'The account already exists for that email.',
             posActionName: 'Ok',
           );
-          print('The account already exists for that email.');
         }
       } catch (e) {
+        // todo : hide Loading and Show status Message
         ShowDialogUtils.hideLoading(context: context);
         ShowDialogUtils.showMessage(
           context: context,

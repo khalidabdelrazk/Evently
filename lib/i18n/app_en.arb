@@ -69,5 +69,7 @@
   "invalidName": "Invalid Name",
   "passwordShouldBe": "Password should be more than or equal 8 characters",
   "editEvent": "Edit Event",
-  "confirm": "Confirm"
+  "confirm": "Confirm",
+  "logout": "Logout",
+  "noEvent": "No Added Events yet"
 }
