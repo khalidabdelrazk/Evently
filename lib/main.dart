@@ -1,10 +1,34 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:evently/core/providers/change_lang.dart';
+import 'package:evently/core/providers/event_list_provider.dart';
+import 'package:evently/core/providers/my_user.dart';
+import 'package:evently/core/routes/route_names.dart';
 import 'package:evently/core/routes/routes.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:evently/src/generated/i18n/app_localizations.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'firebase_options.dart';
+
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  // await FirebaseFirestore.instance.disableNetwork();
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (context) => ChangeLang()),
+      ChangeNotifierProvider(create: (context) => EventListProvider()),
+      ChangeNotifierProvider(create: (context) => MyUserProvider()),
+    ],
+      child: MyApp()
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -13,7 +37,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    var langProvider = Provider.of<ChangeLang>(context);
     return MaterialApp(
+      theme: langProvider.theme.copyWith(
+        textTheme: langProvider.isEnglish? GoogleFonts.interTextTheme() : GoogleFonts.ibmPlexSansArabicTextTheme(),
+      ),
       onGenerateTitle: (context) => AppLocalizations.of(context)!.hello,
       debugShowCheckedModeBanner: false,
       localizationsDelegates: [
@@ -26,8 +54,10 @@ class MyApp extends StatelessWidget {
         Locale('en'), // English
         Locale('ar'), // Spanish
       ],
-      locale: Locale('en'),
+      locale: langProvider.locale,
       routes: Routes.myAppRoutes,
+      initialRoute: RouteNames.splashScreen,
+      // home: OnboardingScreen(),
     );
   }
 }
