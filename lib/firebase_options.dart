@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'evently-app-ce32d.firebasestorage.app',
     measurementId: 'G-DN9MSJZT4G',
   );
+
 }

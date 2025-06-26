@@ -231,6 +231,7 @@ class _CreateAccountState extends State<CreateAccount> {
         );
         await FirebaseUtils.addUser(myUser);
         // todo : Save User Id
+        print( '$myUser ----------------------------------------------->');
         var userProvider = Provider.of<MyUserProvider>(context,listen: false);
         userProvider.updateUser(myUser);
         userProvider.setLoginStatus(true);
@@ -271,7 +272,7 @@ class _CreateAccountState extends State<CreateAccount> {
         ShowDialogUtils.hideLoading(context: context);
         ShowDialogUtils.showMessage(
           context: context,
-          title: 'Error',
+          title: 'Error last',
           message: e.toString(),
           posActionName: 'Ok',
         );
